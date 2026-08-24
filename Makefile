@@ -6,15 +6,16 @@ dev:
 
 test:
 	pytest -q
+	@echo "TEST COUNT: $$(pytest --collect-only -q | tail -1)"
 
 demo:
-	@echo "TODO: tools/demo.py (T-24)"
+	python -m tools.demo
 
 quiet-diff:
 	@echo "TODO: tools/quiet_diff.py (T-19)"
 
 diagram:
-	@echo "TODO: tools/diagram.py (T-25)"
+	python tools/diagram.py
 
 deploy:
 	@bash deploy.sh
