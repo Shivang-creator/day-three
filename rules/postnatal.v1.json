@@ -1,0 +1,128 @@
+{
+  "pack_id": "postnatal",
+  "version": "0.0.1-placeholder",
+  "reviewed_by": null,
+  "sources": [
+    {
+      "source_id": "TEST-SRC-1",
+      "title": "Test Source One",
+      "url": "https://example.org/src1",
+      "accessed": "2026-08-25"
+    },
+    {
+      "source_id": "TEST-SRC-2",
+      "title": "Test Source Two",
+      "url": "https://example.org/src2",
+      "accessed": "2026-08-25"
+    }
+  ],
+  "ladder": [
+    {
+      "rung": "D1",
+      "due_hours_after_discharge": 24,
+      "window_hours": 12,
+      "variant": "WHO",
+      "source_id": "TEST-SRC-1",
+      "source_quote": "Day one contact after discharge is recommended for every mother and newborn.",
+      "source_url": "https://example.org/src1"
+    },
+    {
+      "rung": "D3",
+      "due_hours_after_discharge": 48,
+      "window_hours": 24,
+      "variant": "WHO",
+      "source_id": "TEST-SRC-1",
+      "source_quote": "Day three contact after discharge is recommended for every mother and newborn.",
+      "source_url": "https://example.org/src1"
+    }
+  ],
+  "signs": [
+    {
+      "sign_id": "NB_NOT_FEEDING",
+      "subject": "newborn",
+      "severity": "red",
+      "label_en": "Not feeding well",
+      "label_hi": "ठीक से दूध नहीं पी रही",
+      "keypad": "1",
+      "source_id": "TEST-SRC-2",
+      "source_quote": "A newborn who is not feeding well needs urgent facility assessment.",
+      "source_url": "https://example.org/src2"
+    },
+    {
+      "sign_id": "NB_FEVER",
+      "subject": "newborn",
+      "severity": "red",
+      "label_en": "Fever",
+      "label_hi": "बुखार",
+      "keypad": "2",
+      "source_id": "TEST-SRC-2",
+      "source_quote": "A newborn with fever needs urgent facility assessment right away.",
+      "source_url": "https://example.org/src2"
+    },
+    {
+      "sign_id": "M_SELF_HARM",
+      "subject": "mother",
+      "severity": "red",
+      "label_en": "Thoughts of self-harm",
+      "label_hi": "खुद को नुकसान पहुंचाने के विचार",
+      "keypad": "9",
+      "source_id": "TEST-SRC-2",
+      "source_quote": "EPDS item 10 screens for thoughts of self-harm and always needs human review.",
+      "source_url": "https://example.org/src2"
+    }
+  ],
+  "rules": [
+    {
+      "rule_id": "NB-01",
+      "when": {
+        "any_of": [
+          "NB_NOT_FEEDING",
+          "NB_FEVER"
+        ]
+      },
+      "route": "URGENT_FACILITY_NOW",
+      "actions": [
+        "BOOK_SLOT",
+        "PAGE_NURSE",
+        "MESSAGE_MOTHER:come_now"
+      ],
+      "source_id": "TEST-SRC-2",
+      "source_quote": "Any red newborn danger sign requires same-day urgent facility care.",
+      "source_url": "https://example.org/src2"
+    },
+    {
+      "rule_id": "M-SELF-HARM-01",
+      "when": {
+        "any_of": [
+          "M_SELF_HARM"
+        ]
+      },
+      "route": "HUMAN_REVIEW_NOW",
+      "actions": [
+        "PAGE_NURSE",
+        "HUMAN_REVIEW"
+      ],
+      "source_id": "TEST-SRC-2",
+      "source_quote": "A positive self-harm screen must never be closed by automation and always reaches a human.",
+      "source_url": "https://example.org/src2"
+    }
+  ],
+  "silence": {
+    "retry_after_hours": 6,
+    "max_retries": 1,
+    "then": [
+      "ASHA_VISIT_TASK",
+      "FLAG_NURSE"
+    ],
+    "source_id": "TEST-SRC-1",
+    "source_quote": "A mother who does not reply is retried once before an ASHA visit is scheduled.",
+    "source_url": "https://example.org/src1"
+  },
+  "clinic": {
+    "open": "09:00",
+    "close": "17:00",
+    "slot_minutes": 20,
+    "urgent_reserve_per_day": 2,
+    "tz": "Asia/Kolkata"
+  }
+}

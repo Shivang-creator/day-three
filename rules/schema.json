@@ -1,0 +1,116 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Day Three rule pack",
+  "description": "Structural shape of a rule pack. Enforced by core/rulepack.py with hand-rolled stdlib checks — this file documents the shape and supplies the required-top-level-key list; it is not run through a jsonschema validator (no such dependency in core/).",
+  "type": "object",
+  "required": ["pack_id", "version", "sources", "ladder", "signs", "rules", "silence", "clinic"],
+  "properties": {
+    "pack_id": {"type": "string"},
+    "version": {"type": "string"},
+    "reviewed_by": {"type": ["string", "null"]},
+    "sources": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["source_id", "title", "url", "accessed"],
+        "properties": {
+          "source_id": {"type": "string"},
+          "title": {"type": "string"},
+          "url": {"type": "string"},
+          "accessed": {"type": "string"}
+        }
+      }
+    },
+    "ladder": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "rung", "due_hours_after_discharge", "window_hours", "variant",
+          "source_id", "source_quote", "source_url"
+        ],
+        "properties": {
+          "rung": {"type": "string"},
+          "due_hours_after_discharge": {"type": "number"},
+          "window_hours": {"type": "number"},
+          "variant": {"type": "string", "enum": ["WHO", "HBNC"]},
+          "source_id": {"type": "string"},
+          "source_quote": {"type": "string"},
+          "source_url": {"type": "string"}
+        }
+      }
+    },
+    "signs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "sign_id", "subject", "severity", "label_en", "label_hi",
+          "keypad", "source_id", "source_quote", "source_url"
+        ],
+        "properties": {
+          "sign_id": {"type": "string"},
+          "subject": {"type": "string", "enum": ["newborn", "mother"]},
+          "severity": {"type": "string", "enum": ["red", "yellow"]},
+          "label_en": {"type": "string"},
+          "label_hi": {"type": "string"},
+          "keypad": {"type": "string"},
+          "source_id": {"type": "string"},
+          "source_quote": {"type": "string"},
+          "source_url": {"type": "string"}
+        }
+      }
+    },
+    "rules": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "rule_id", "when", "route", "actions",
+          "source_id", "source_quote", "source_url"
+        ],
+        "properties": {
+          "rule_id": {"type": "string"},
+          "when": {"type": "object"},
+          "route": {
+            "type": "string",
+            "enum": [
+              "HUMAN_REVIEW_NOW", "URGENT_FACILITY_NOW", "SAME_DAY_VISIT",
+              "HUMAN_REVIEW", "NEXT_CONTACT"
+            ]
+          },
+          "actions": {"type": "array", "items": {"type": "string"}},
+          "source_id": {"type": "string"},
+          "source_quote": {"type": "string"},
+          "source_url": {"type": "string"}
+        }
+      }
+    },
+    "silence": {
+      "type": "object",
+      "required": [
+        "retry_after_hours", "max_retries", "then",
+        "source_id", "source_quote", "source_url"
+      ],
+      "properties": {
+        "retry_after_hours": {"type": "number"},
+        "max_retries": {"type": "integer"},
+        "then": {"type": "array", "items": {"type": "string"}},
+        "source_id": {"type": "string"},
+        "source_quote": {"type": "string"},
+        "source_url": {"type": "string"}
+      }
+    },
+    "clinic": {
+      "type": "object",
+      "required": ["open", "close", "slot_minutes", "urgent_reserve_per_day", "tz"],
+      "properties": {
+        "open": {"type": "string"},
+        "close": {"type": "string"},
+        "slot_minutes": {"type": "integer"},
+        "urgent_reserve_per_day": {"type": "integer"},
+        "tz": {"type": "string"}
+      }
+    }
+  }
+}
