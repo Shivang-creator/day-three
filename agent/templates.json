@@ -1,0 +1,46 @@
+{
+  "checkin_D1": {
+    "en": "Hello {name}, this is Day Three's Day 1 check-in. Reply with how you and your baby are feeling today.",
+    "hi": "नमस्ते {name}, यह आपका पहले दिन का चेकअप है। कृपया बताएं कि आप और आपका बच्चा आज कैसा महसूस कर रहे हैं।"
+  },
+  "checkin_D14": {
+    "en": "Hello {name}, this is your Day 14 check-in. Reply with how you and your baby are feeling today.",
+    "hi": "नमस्ते {name}, यह आपका चौदहवें दिन का चेकअप है। कृपया बताएं कि आप और आपका बच्चा आज कैसा महसूस कर रहे हैं।"
+  },
+  "checkin_D21": {
+    "en": "Hello {name}, this is your Day 21 check-in. Reply with how you and your baby are feeling today.",
+    "hi": "नमस्ते {name}, यह आपका इक्कीसवें दिन का चेकअप है। कृपया बताएं कि आप और आपका बच्चा आज कैसा महसूस कर रहे हैं।"
+  },
+  "checkin_D28": {
+    "en": "Hello {name}, this is your Day 28 check-in. Reply with how you and your baby are feeling today.",
+    "hi": "नमस्ते {name}, यह आपका अठ्ठाइसवें दिन का चेकअप है। कृपया बताएं कि आप और आपका बच्चा आज कैसा महसूस कर रहे हैं।"
+  },
+  "checkin_D3": {
+    "en": "Hello {name}, this is your Day 3 check-in. Reply with how you and your baby are feeling today.",
+    "hi": "नमस्ते {name}, यह आपका तीसरे दिन का चेकअप है। कृपया बताएं कि आप और आपका बच्चा आज कैसा महसूस कर रहे हैं।"
+  },
+  "checkin_D42": {
+    "en": "Hello {name}, this is your Day 42 check-in, the final one in this follow-up. Reply with how you and your baby are feeling today.",
+    "hi": "नमस्ते {name}, यह आपका 42वें दिन का अंतिम चेकअप है। कृपया बताएं कि आप और आपका बच्चा आज कैसा महसूस कर रहे हैं।"
+  },
+  "checkin_D7": {
+    "en": "Hello {name}, this is your Day 7 check-in. Reply with how you and your baby are feeling today.",
+    "hi": "नमस्ते {name}, यह आपका सातवें दिन का चेकअप है। कृपया बताएं कि आप और आपका बच्चा आज कैसा महसूस कर रहे हैं।"
+  },
+  "come_now": {
+    "en": "{name}, please come to the clinic right now with your baby. This cannot wait. Clinic: {clinic_address}. We are expecting you.",
+    "hi": "{name}, कृपया अभी अपने बच्चे के साथ क्लिनिक आइए। यह इंतजार नहीं कर सकता। क्लिनिक: {clinic_address}। हम आपका इंतज़ार कर रहे हैं।"
+  },
+  "retry": {
+    "en": "Hello {name}, we did not hear back from you about your {rung} check-in. Please reply when you can — even a single number helps us know you and your baby are okay.",
+    "hi": "नमस्ते {name}, हमें आपके {rung} चेकअप का जवाब नहीं मिला। कृपया जब संभव हो जवाब दें — एक अंक भी हमें बताता है कि आप और आपका बच्चा ठीक हैं।"
+  },
+  "review": {
+    "en": "{name}, thank you for your reply. A nurse will call you shortly to check on you and your baby.",
+    "hi": "{name}, आपके जवाब के लिए धन्यवाद। एक नर्स जल्द ही आपको और आपके बच्चे को जांचने के लिए फोन करेगी।"
+  },
+  "same_day": {
+    "en": "{name}, please visit the clinic today. Your slot is booked for {slot_time}. Clinic: {clinic_address}.",
+    "hi": "{name}, कृपया आज क्लिनिक आइए। आपका समय {slot_time} पर बुक है। क्लिनिक: {clinic_address}।"
+  }
+}
