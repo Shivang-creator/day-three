@@ -37,14 +37,25 @@ def test_every_fixture_row_has_the_required_fields():
         assert row["expected_route"] in adversarial.URGENCY_RANK
 
 
-def test_tool_runs_on_fixtures_and_writes_results(tmp_path, monkeypatch):
+def test_tool_runs_on_fixtures_and_writes_results_only_with_write_flag(tmp_path, monkeypatch):
+    """R-09: the committed docs/adversarial-results.json must only change
+    when --write is explicitly passed — plain `python -m tools.adversarial`
+    (the README's own documented command) must never leave the tracked
+    file dirty just from being run."""
     results_path = tmp_path / "adversarial-results.json"
     monkeypatch.setattr(adversarial, "RESULTS_PATH", results_path)
-    payload = adversarial.main()
 
+    payload_no_write = adversarial.main([])
+    assert not results_path.exists(), "without --write, the results file must not be touched at all (R-09)"
+
+    payload = adversarial.main(["--write"])
     assert results_path.exists()
     on_disk = json.loads(results_path.read_text())
     assert on_disk == payload
+    # Both runs are the same offline/mocked replay — only run_at may differ.
+    assert {k: v for k, v in payload.items() if k != "run_at"} == {
+        k: v for k, v in payload_no_write.items() if k != "run_at"
+    }
     assert payload["n"] >= 30
     assert payload["live_recorded_this_run"] == 0  # LIVE not set -> zero network calls
     assert set(payload["totals"]) == {"caught", "missed", "over_escalated", "recorded", "unrecorded"}

@@ -33,9 +33,15 @@ def test_health():
     r = client.get("/api/health")
     assert r.status_code == 200
     body = r.json()
-    assert set(body.keys()) == {"model", "model_off", "store", "rules_version", "git_sha"}
+    # R-02: model_enabled/quota_exhausted/quota_retry_after_s added so a
+    # blank key or an exhausted quota is visible without MODEL_OFF=1 set.
+    assert set(body.keys()) == {
+        "model", "model_off", "model_enabled", "quota_exhausted", "quota_retry_after_s", "store", "rules_version", "git_sha",
+    }
     assert isinstance(body["model_off"], bool)
     assert body["model_off"] is True
+    assert body["model_enabled"] is False  # MODEL_OFF=1 forced by the autouse fixture
+    assert body["quota_exhausted"] is False
     assert body["rules_version"] == PACK.version
 
 

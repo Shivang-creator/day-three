@@ -86,22 +86,33 @@ def _category_assignment(seed: int, n: int = DEFAULT_N) -> dict[int, str]:
     return assignment
 
 
-def category_for(seed: int, mother_id: str) -> str:
+def category_for(seed: int, mother_id: str, n: int = DEFAULT_N) -> str:
     """Deterministic per-mother category — see the DEFAULT_N note above for
     why this is a quota assignment rather than an independent coin flip per
     mother. `mother_id` must be in `generate()`'s own `"mother-NN"` shape;
-    the index is parsed back out of it."""
+    the index is parsed back out of it.
+
+    R-05 (RED-TEAM.md): this used to call `_category_assignment(seed)` with
+    NO `n`, silently defaulting to `DEFAULT_N=38` regardless of how many
+    mothers `generate()` had actually been asked for — `POST /api/seed
+    {"n": 2000}` enrolled fine, but the next `/api/advance` KeyError'd at
+    index 38 (`_category_assignment(seed)` only ever built a 38-entry
+    table). `n` must match the cohort size the caller actually used;
+    `core/sweep.py::run_sweep` and `app/orchestrator.py::advance` now
+    thread the real enrolled count through instead of relying on this
+    default."""
     index = int(mother_id.rsplit("-", 1)[-1])
-    return _category_assignment(seed)[index]
+    return _category_assignment(seed, n)[index]
 
 
-def scripted_reply(seed: int, mother: Mother, rung: str, pack: RulePack) -> SymptomForm | None:
+def scripted_reply(seed: int, mother: Mother, rung: str, pack: RulePack, n: int = DEFAULT_N) -> SymptomForm | None:
     """The mother's scripted keypad reply for this rung, or None for
     silence. A keypad reply is the complete, human-operated channel: every
     sign in the pack is explicitly set true/false (core/gate.py relies on
     this — only an explicit keypad False can ever clear a sign to
-    NEXT_CONTACT)."""
-    category = category_for(seed, mother.mother_id)
+    NEXT_CONTACT). `n` is the cohort's own size (R-05) — see
+    `category_for`'s docstring."""
+    category = category_for(seed, mother.mother_id, n)
     if category == "silent_d3" and rung == "D3":
         return None
 

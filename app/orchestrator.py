@@ -112,6 +112,7 @@ from agent.gemini_client import model_enabled
 from agent.reader import read as reader_read
 from core import gate, routing
 from core.clock import Clock, FixedClock
+from core.schedule import due_now
 from core.cohort import generate as generate_cohort
 from core.events import Event, idempotency_key, reduce
 from core.models import Mother, SymptomForm
@@ -265,7 +266,21 @@ def _render_message(*, intent: str, lang: str, facts: dict, store, pack, quiet_f
     kill-switch is on, and the per-call budget isn't exhausted. Everything
     else always goes through agent/quiet.py — no model call is even
     attempted, so it costs nothing against the budget."""
-    if intent not in ESCALATION_INTENTS or quiet_flag or not model_enabled():
+    if intent not in ESCALATION_INTENTS:
+        return quiet.render(intent, lang, facts)
+    if quiet_flag:
+        return quiet.render(intent, lang, facts)
+    if not model_enabled():
+        # R-02: this is the case a blank GEMINI_API_KEY hits — an
+        # escalation message that WOULD have gone to the model, silently
+        # downgraded instead. Previously unlogged (RED-TEAM.md Attack 1:
+        # "the 4 writer fallbacks logged NOTHING"), unlike the identical
+        # degrade one branch down for a budget exhaustion. Same log shape
+        # as that one so both fallback causes are greppable together.
+        logger.error(
+            "MODEL_FALLBACK app.orchestrator: model_enabled()=False (no key / MODEL_OFF) — intent=%r forced to Quiet template",
+            intent,
+        )
         return quiet.render(intent, lang, facts)
     if budget["used"] >= budget["limit"]:
         logger.error(
@@ -401,8 +416,17 @@ def advance(store, pack: RulePack, seed: int, to: str) -> dict:
 
     rung_name = None if _is_iso(to) else to
     target_iso = to if rung_name is None else _target_iso_for_rung(pack, rung_name)
-    store.set_meta(_clock_meta_key(seed), {"iso": target_iso})
+    # R-04 (RED-TEAM.md): a naive ISO string (no timezone) passes `_is_iso`
+    # (datetime.fromisoformat accepts naive datetimes) but FixedClock itself
+    # rejects it. This USED to `set_meta` the poisoned clock before ever
+    # constructing/validating the FixedClock, so a rejected `/api/advance`
+    # still left `meta clock:<seed>` pointing at the bad value — every
+    # LATER `/api/reply` on that seed then 400'd too (get_clock() builds a
+    # FixedClock from whatever was last persisted), with no way back except
+    # a successful advance overwriting it. Build+validate the clock FIRST;
+    # only persist it once construction has actually succeeded.
     clock = FixedClock(datetime.fromisoformat(target_iso))
+    store.set_meta(_clock_meta_key(seed), {"iso": target_iso})
     is_quiet = quiet_on(store, seed)
     budget = _new_budget()
 
@@ -427,7 +451,12 @@ def advance(store, pack: RulePack, seed: int, to: str) -> dict:
             )
 
     snapshot = {cid: store.events(cid) for cid in case_ids}
-    result = run_sweep(snapshot, clock, pack)
+    # R-05: `n` here is the namespace's REAL enrolled count (not the
+    # cohort's DEFAULT_N=38 default) — core.cohort.category_for's lookup
+    # table must be sized to match whatever `POST /api/seed` actually
+    # enrolled, or a case whose index falls outside a stale/mismatched
+    # table KeyErrors inside run_sweep.
+    result = run_sweep(snapshot, clock, pack, n=len(case_ids))
 
     booked = _booked_slots(store, seed)
     decisions_out = []
@@ -526,7 +555,15 @@ def reply(store, pack: RulePack, seed: int, case_id: str, *, keypad: dict | None
     _append(store, full_id, clock_iso, "VERDICT", _verdict_payload(verdict), verdict.tag, None, key_extra=f"reply-verdict:{len(events)}")
 
     booked = _booked_slots(store, seed)
-    actions = routing.plan(verdict, state, clock, pack, booked=booked)
+    # J-07/R-07 (JUDGE-REPORT.md, .crew/BOARD.md): only advance the Contact
+    # Ladder if this reply is actually answering a contact that's due RIGHT
+    # NOW at this clock — otherwise a handful of replies sent back-to-back
+    # (a keypad reply plus a few free-text messages, none of which moved
+    # the clock) used to fast-forward `state.rung` one full ladder step per
+    # reply, silently skipping every rung in between. See routing.plan's
+    # own `advance_ladder` docstring for the full story.
+    is_due_now = due_now(state, clock, pack) is not None
+    actions = routing.plan(verdict, state, clock, pack, booked=booked, advance_ladder=is_due_now)
     budget = _new_budget()
     booked |= _apply_actions(store, pack, full_id, clock_iso, tuple(actions), mother, is_quiet, budget)
     _save_booked_slots(store, seed, booked)

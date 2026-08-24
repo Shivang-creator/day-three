@@ -42,7 +42,7 @@
     {
       "source_id": "RESEARCH-NOTE",
       "title": "research/RULES-SOURCE.md — 'What we do NOT model' finding: S1 was checked and contains no self-harm/PPD screening item; not a WHO rule, a builder non-finding note",
-      "url": "https://www.who.int/publications/i/item/9789240045989",
+      "url": "https://raw.githubusercontent.com/Shivang-creator/day-three/main/research/RULES-SOURCE.md",
       "accessed": "2026-08-25"
     }
   ],
@@ -422,7 +422,7 @@
       "keypad": "9",
       "fact_id": null,
       "source_id": "RESEARCH-NOTE",
-      "source_url": "https://www.who.int/publications/i/item/9789240045989",
+      "source_url": "https://raw.githubusercontent.com/Shivang-creator/day-three/main/research/RULES-SOURCE.md",
       "source_quote": "Do not invent a threshold or a route for this — until a specific published screening rule is sourced, the engine must not claim to detect it."
     },
     {
@@ -892,7 +892,7 @@
       ],
       "fact_id": null,
       "source_id": "RESEARCH-NOTE",
-      "source_url": "https://www.who.int/publications/i/item/9789240045989",
+      "source_url": "https://raw.githubusercontent.com/Shivang-creator/day-three/main/research/RULES-SOURCE.md",
       "source_quote": "Do not invent a threshold or a route for this — until a specific published screening rule is sourced, the engine must not claim to detect it."
     },
     {

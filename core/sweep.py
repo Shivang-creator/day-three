@@ -30,7 +30,7 @@ class SweepResult(ToJsonMixin):
     actions: tuple  # tuple[Action, ...] — every decision's actions, flattened, in decision order
 
 
-def run_sweep(snapshot: dict[str, list[Event]], clock: Clock, pack: RulePack) -> SweepResult:
+def run_sweep(snapshot: dict[str, list[Event]], clock: Clock, pack: RulePack, n: int = 38) -> SweepResult:
     """For every case_id in `snapshot` whose *current* rung has an open
     contact window at `clock.now()` (core/schedule.py::due_now — this reads
     each case's own state, so it naturally respects each mother's WHO/HBNC
@@ -45,7 +45,11 @@ def run_sweep(snapshot: dict[str, list[Event]], clock: Clock, pack: RulePack) ->
     Slot bookings are threaded through `core.routing.plan`'s `booked`
     parameter across the whole sweep, so two urgent cases evaluated in the
     same pass never collide on the same clinic slot.
-    """
+
+    `n` (R-05) is the cohort's own enrolled size, passed straight through
+    to `core.cohort.scripted_reply` — it must match whatever `n` the
+    namespace was actually seeded with, or `category_for`'s lookup table
+    is built the wrong size for some of these mothers' indices."""
     decisions: list[Decision] = []
     all_actions: list[Action] = []
     booked: set[str] = set()
@@ -59,7 +63,7 @@ def run_sweep(snapshot: dict[str, list[Event]], clock: Clock, pack: RulePack) ->
 
         seed_str, _, _rest = case_id.partition(":")
         seed = int(seed_str)
-        form = scripted_reply(seed, state.mother, contact.rung, pack)
+        form = scripted_reply(seed, state.mother, contact.rung, pack, n=n)
 
         if form is None:
             verdict = Verdict(route=SILENCE_ROUTE, fired=(), unknown=(), tag="Simulated")

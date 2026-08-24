@@ -7,7 +7,7 @@ cases evaluated back to back in the same pass.
 """
 from __future__ import annotations
 
-from datetime import timedelta
+from datetime import datetime, timedelta
 
 from core import slots
 from core.clock import Clock
@@ -46,10 +46,25 @@ def plan(
     clock: Clock,
     pack: RulePack,
     booked: frozenset[str] | set[str] = frozenset(),
+    advance_ladder: bool = True,
 ) -> list[Action]:
     """Every Action carries a `rule_id` naming why it exists. The Contact
     Ladder keeps moving regardless of route — an urgent visit today does not
-    cancel the mother's next scheduled contact."""
+    cancel the mother's next scheduled contact.
+
+    `advance_ladder` (R-07/J-07, JUDGE-REPORT.md): `core/sweep.py::run_sweep`
+    only ever calls `plan()` for a case whose CURRENT rung is actually due
+    right now (it checks `core.schedule.due_now` first) — for that caller,
+    "the ladder keeps moving" correctly means "move to the next rung."
+    `app/orchestrator.py::reply()` used to call `plan()` unconditionally for
+    ANY reply at ANY time, with no such due-now guard — so every single
+    `/api/reply` (not just one that actually answered a due contact) pushed
+    `state.rung` one step further along the ladder, letting a handful of
+    replies sent back-to-back (none of which advanced the CLOCK) silently
+    skip straight to the ladder's last rung. `advance_ladder=False` lets a
+    caller suppress the ladder-reschedule action specifically, for a reply
+    that isn't answering a currently-due contact, without touching the
+    verdict-driven actions (BOOK_SLOT/PAGE_NURSE/HUMAN_REVIEW/...) at all."""
     actions: list[Action] = []
     booked_now = set(booked)
 
@@ -93,9 +108,10 @@ def plan(
         )
     # NEXT_CONTACT: nothing fired and nothing unresolved — no escalation action.
 
-    ladder_action = _schedule_next_contact_action(state, pack)
-    if ladder_action is not None:
-        actions.append(ladder_action)
+    if advance_ladder:
+        ladder_action = _schedule_next_contact_action(state, pack)
+        if ladder_action is not None:
+            actions.append(ladder_action)
 
     return actions
 
@@ -104,9 +120,25 @@ def silence_plan(state: CaseState, clock: Clock, pack: RulePack) -> list[Action]
     """A CONTACT_DUE with no REPLY_RECEIVED inside the window is a signal,
     not a non-event (PLAN §4.6): retry once, then escalate. `state.retry_count`
     (core/events.py::reduce) counts consecutive RETRY_SCHEDULED events since
-    the last reply or new contact."""
+    the last reply or new contact.
+
+    R-03 (RED-TEAM.md): re-running a sweep at an UNCHANGED clock (the same
+    D3 target called twice) used to escalate straight to ASHA/FLAG_NURSE on
+    the second call, even though no time had actually passed since the
+    first call scheduled the retry. Cause: this function only ever checked
+    `state.retry_count < max_retries`, never whether the retry it already
+    scheduled (`state.next_due`, set by the RETRY_SCHEDULED event) had
+    actually come due yet. A sweep must be a safe no-op when the clock
+    hasn't moved (module docstring of core/sweep.py) — so if a retry is
+    already pending and its own due time is still in the future, this
+    returns no actions at all rather than re-deciding anything."""
     silence = pack.silence
     rule_id = silence.silence_id or "SIL-01"
+
+    if state.retry_count > 0 and state.next_due:
+        retry_due = datetime.fromisoformat(state.next_due)
+        if clock.now() < retry_due:
+            return []  # already retried once; its own window hasn't elapsed — idempotent no-op
 
     if state.retry_count < silence.max_retries:
         due = (clock.now() + timedelta(hours=silence.retry_after_hours)).isoformat()

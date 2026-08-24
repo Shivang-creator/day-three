@@ -20,14 +20,53 @@ import hashlib
 import json
 import logging
 import os
+import time
 
 logger = logging.getLogger("agent.gemini_client")
 
 # Process-wide: once every key in one round-robin pass has come back 429,
-# stop even attempting the network for the rest of this process (PLAN §4.9
+# stop even attempting the network for a bounded cool-down (PLAN §4.9
 # "daily-quota 429 -> fail-fast for the process"). A transient single-key
 # 429 does NOT set this — only a round where every configured key failed.
+#
+# R-08 (RED-TEAM.md): this used to be permanent for the process's whole
+# lifetime — one burst of transient 429s (not necessarily the daily quota)
+# would silently turn the reader off forever, with nothing in `/api/health`
+# or the UI to show it. Now it is time-boxed: `_QUOTA_EXHAUSTED_UNTIL` is a
+# `time.monotonic()` deadline, honouring the API's own Retry-After if the
+# exception carried one (`exc.retry_after`, seconds) and never shorter than
+# `QUOTA_COOLDOWN_S` (env, default below). `quota_exhausted()` is the one
+# place that reads/clears this — everything else (generate_json, health)
+# calls it rather than touching the bools directly.
 _QUOTA_EXHAUSTED = False
+_QUOTA_EXHAUSTED_UNTIL = 0.0
+_DEFAULT_QUOTA_COOLDOWN_S = 60.0
+
+
+def _quota_cooldown_s() -> float:
+    try:
+        return float(os.environ.get("QUOTA_COOLDOWN_S", _DEFAULT_QUOTA_COOLDOWN_S))
+    except ValueError:
+        return _DEFAULT_QUOTA_COOLDOWN_S
+
+
+def quota_exhausted() -> bool:
+    """Is the process-wide 429 fail-fast currently active? Self-clearing:
+    once `time.monotonic()` passes `_QUOTA_EXHAUSTED_UNTIL`, this both
+    returns False and resets the flag — a later call is free to try the
+    network again. Exposed for `/api/health` (R-02/R-08: this must be
+    visible, not silently inferred)."""
+    global _QUOTA_EXHAUSTED
+    if _QUOTA_EXHAUSTED and time.monotonic() >= _QUOTA_EXHAUSTED_UNTIL:
+        _QUOTA_EXHAUSTED = False
+    return _QUOTA_EXHAUSTED
+
+
+def quota_retry_after_s() -> float:
+    """Seconds remaining on the current cool-down, 0 if not exhausted."""
+    if not quota_exhausted():
+        return 0.0
+    return max(0.0, _QUOTA_EXHAUSTED_UNTIL - time.monotonic())
 
 
 def model_enabled() -> bool:
@@ -93,7 +132,7 @@ def generate_json(
     degraded results are never cached, so a later real call can still
     succeed once the outage clears.
     """
-    global _QUOTA_EXHAUSTED
+    global _QUOTA_EXHAUSTED, _QUOTA_EXHAUSTED_UNTIL
     model = os.environ.get("GEMINI_MODEL", "gemini-3.5-flash")
     key = cache_key or _cache_key(model, prompt, schema)
 
@@ -107,15 +146,24 @@ def generate_json(
         logger.error("MODEL_FALLBACK model=%s reason=%s (kill-switch)", model, reason)
         return {"degraded": True, "reason": reason, "model": model}
 
-    if _QUOTA_EXHAUSTED:
+    if quota_exhausted():
+        retry_after = quota_retry_after_s()
         logger.error(
-            "MODEL_FALLBACK model=%s reason=quota-exhausted-this-process (fail-fast, no network attempt)",
+            "MODEL_FALLBACK model=%s reason=quota-exhausted-this-process (fail-fast, no network attempt; "
+            "retry in %.0fs)",
             model,
+            retry_after,
         )
-        return {"degraded": True, "reason": "quota-exhausted-this-process", "model": model}
+        return {
+            "degraded": True,
+            "reason": "quota-exhausted-this-process",
+            "model": model,
+            "retry_after_s": retry_after,
+        }
 
     keys = _keys()
     last_reason = "no keys configured"
+    max_retry_after = 0.0
     for api_key in keys:
         try:
             result = _call(model, api_key, prompt, schema, timeout_s)
@@ -131,18 +179,28 @@ def generate_json(
                 tail = api_key[-4:] if len(api_key) >= 4 else api_key
                 last_reason = f"429 rate/quota limit (key ...{tail})"
                 logger.warning("gemini 429, rotating to next key: %s", last_reason)
+                # R-08: honour the API's own Retry-After if it told us one,
+                # so a short burst-rate 429 doesn't get treated the same as
+                # a full-day quota exhaustion.
+                retry_after = getattr(exc, "retry_after", None)
+                if isinstance(retry_after, (int, float)) and retry_after > max_retry_after:
+                    max_retry_after = float(retry_after)
                 continue
             last_reason = f"{type(exc).__name__}: {exc}"
             logger.error("MODEL_FALLBACK model=%s reason=%s", model, last_reason)
             return {"degraded": True, "reason": last_reason, "model": model}
     else:
         # Every configured key was tried and every one came back 429 — this
-        # is the daily-quota shape, not a transient blip. Fail fast for the
-        # rest of the process instead of eating a full timeout per call.
+        # is the daily-quota shape, not a transient blip. Fail fast, but
+        # only for a bounded cool-down (R-08), not for the rest of the
+        # process's life: `max(max_retry_after, QUOTA_COOLDOWN_S)`.
         _QUOTA_EXHAUSTED = True
+        cooldown = max(max_retry_after, _quota_cooldown_s())
+        _QUOTA_EXHAUSTED_UNTIL = time.monotonic() + cooldown
         logger.error(
-            "MODEL_FALLBACK model=%s reason=%s (all keys exhausted; failing fast for this process)",
+            "MODEL_FALLBACK model=%s reason=%s (all keys exhausted; failing fast for %.0fs)",
             model,
             last_reason,
+            cooldown,
         )
-        return {"degraded": True, "reason": last_reason, "model": model}
+        return {"degraded": True, "reason": last_reason, "model": model, "retry_after_s": cooldown}

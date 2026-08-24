@@ -12,8 +12,9 @@ from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
-from pydantic import BaseModel
+from pydantic import BaseModel, StrictBool
 
+from agent.gemini_client import model_enabled, quota_exhausted, quota_retry_after_s
 from app import orchestrator
 from core.rulepack import load as load_rulepack
 from store import make_store
@@ -47,7 +48,15 @@ class AdvanceBody(BaseModel):
 
 class ReplyBody(BaseModel):
     case_id: str
-    keypad: Optional[dict] = None
+    # R-06 (RED-TEAM.md): a bare `Optional[dict]` accepted ANY JSON value
+    # per sign — `null`/`0`/`"no"` all reached core/gate.py::evaluate as
+    # neither `is True` nor `== "unknown"`, which its own fall-through
+    # treats as an implicit clear (NEXT_CONTACT), even though none of them
+    # is the explicit keypad `False` the gate's "reader can never clear"
+    # rule requires. `StrictBool` rejects anything that isn't a literal
+    # JSON true/false with a 422 before it ever reaches core/ — unanswered
+    # must never look like "no sign", it must fail loudly instead.
+    keypad: Optional[dict[str, StrictBool]] = None
     text: Optional[str] = None
 
 
@@ -66,9 +75,22 @@ def _not_found(exc: orchestrator.NotFoundError):
 
 @app.get("/api/health")
 def health():
+    # R-02: `model_off` alone only reflects the MODEL_OFF env var — a blank
+    # GEMINI_API_KEY (README: "leave it empty and the app runs on
+    # templates") left it reporting `model_off: false`, so a judge on a
+    # fresh clone with no key saw no signal anywhere that they were looking
+    # at template output. `model_enabled` is the SAME predicate
+    # `app/orchestrator.py::_render_message` actually gates every model
+    # call on (`agent.gemini_client.model_enabled()`), so this can never
+    # drift from what the app really does. `quota_exhausted`/
+    # `quota_retry_after_s` surface R-08's process-wide 429 cool-down, which
+    # was previously invisible outside the server log.
     return {
         "model": os.environ.get("GEMINI_MODEL", ""),
         "model_off": os.environ.get("MODEL_OFF", "0") == "1",
+        "model_enabled": model_enabled(),
+        "quota_exhausted": quota_exhausted(),
+        "quota_retry_after_s": quota_retry_after_s(),
         "store": os.environ.get("STORE", "memory"),
         "rules_version": PACK.version,
         "git_sha": os.environ.get("GIT_SHA", "dev"),
@@ -80,8 +102,20 @@ def rules():
     return dataclasses.asdict(PACK)
 
 
+# R-05 (RED-TEAM.md): POST /api/seed {"n": 2000} used to enroll fine (200
+# OK, ~2s of writes) and only fail later, at /api/advance, with an
+# unrelated-looking 500 KeyError — core/cohort.py's category table was
+# built for the wrong size (fixed separately, core/cohort.py::category_for
+# is now n-aware). This caps `n` at the API boundary too: an uncapped
+# enroll is its own problem (an unbounded number of synthetic writes from
+# one request), independent of that crash.
+MAX_SEED_N = 200
+
+
 @app.post("/api/seed")
 def seed(body: SeedBody):
+    if not (1 <= body.n <= MAX_SEED_N):
+        raise HTTPException(status_code=400, detail=f"n must be between 1 and {MAX_SEED_N} (got {body.n})")
     return {"worklist": orchestrator.enroll(STORE, PACK, body.seed, n=body.n)}
 
 
@@ -148,8 +182,18 @@ def replay(seed: int = Query(...), clock: Optional[str] = Query(None)):
     an HTTP route a judge (or a UI click-happy tester) can hit repeatedly
     must never spend a real model call on its own. Live recording is a
     deliberate, budgeted, CLI-only act (`LIVE=1 python -m tools.quiet_diff`,
-    capped at 4 real calls) — see that module's own docstring."""
-    result = quiet_diff.run_diff(seed=seed, to=clock or quiet_diff.DEFAULT_TO, live=False)
+    capped at 4 real calls) — see that module's own docstring.
+
+    R-07 (RED-TEAM.md): an unknown `clock` (e.g. `?clock=D99`, not a rung on
+    any variant's ladder) used to reach `orchestrator._target_iso_for_rung`
+    unguarded and raise a bare `ValueError`, which FastAPI turned into an
+    unhandled 500 — every other route that can hit the same validation
+    (`/api/advance`, `/api/reply`) already maps `ValueError` to a client
+    400; this route hadn't."""
+    try:
+        result = quiet_diff.run_diff(seed=seed, to=clock or quiet_diff.DEFAULT_TO, live=False)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
     return {
         "seed": seed,
         "to": clock or quiet_diff.DEFAULT_TO,

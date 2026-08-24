@@ -193,13 +193,42 @@ def _summary_line(payload: dict) -> str:
     )
 
 
-def main() -> dict:
+def main(argv: list[str] | None = None) -> dict:
+    """R-09 (RED-TEAM.md): the README's own documented command,
+    `python -m tools.adversarial`, used to overwrite the COMMITTED
+    `docs/adversarial-results.json` on every run — only `run_at` actually
+    changed (the numbers reproduce exactly, mocked/cached), but that still
+    meant the tracked file showed as dirty after running a command the
+    README itself tells a judge to run. Printing the summary line no
+    longer touches the committed file at all unless `--write` is passed
+    explicitly — an intentional, opt-in update to the tracked artifact,
+    not a side effect of merely running the tool."""
+    import argparse
+
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--write",
+        action="store_true",
+        help="overwrite the committed docs/adversarial-results.json with this run's results (default: print only)",
+    )
+    args = parser.parse_args(argv)
+
     live = os.environ.get("LIVE") == "1"
     payload = run(live=live)
-    RESULTS_PATH.parent.mkdir(parents=True, exist_ok=True)
-    RESULTS_PATH.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n")
     line = _summary_line(payload)
     print(line)
+    def _display_path(p):
+        try:
+            return p.relative_to(ROOT)
+        except ValueError:
+            return p
+
+    if args.write:
+        RESULTS_PATH.parent.mkdir(parents=True, exist_ok=True)
+        RESULTS_PATH.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n")
+        print(f"wrote {_display_path(RESULTS_PATH)}")
+    else:
+        print(f"{_display_path(RESULTS_PATH)} left untouched — pass --write to update the committed file (R-09)")
     return payload
 
 

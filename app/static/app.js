@@ -106,6 +106,21 @@
     if (!citation || !citation.source_quote) return "";
     return `<details class="event-citation"><summary>source</summary><p class="event-quote">${escapeHtml(citation.source_quote)}</p></details>`;
   }
+  // J-04 (.crew/deliverables/JUDGE-REPORT.md): app/orchestrator.py's generic
+  // HUMAN_REVIEW action carries `reason: "unresolved red sign(s): <every
+  // unresolved sign_id, comma-joined>"` (core/routing.py) — for an
+  // all-unknown SymptomForm that is ~28 raw SCREAMING_SNAKE_CASE tokens,
+  // printed verbatim it dominated the worklist row (and consumed the whole
+  // 390px mobile viewport). Pure function so it's independently testable
+  // (see tests/test_regress_j04.py, which runs this via node).
+  function unresolvedSignsSummary(reason) {
+    const m = /^unresolved red sign\(s\): ?(.*)$/.exec(reason || "");
+    if (!m) return null;
+    const signs = m[1].split(",").map((s) => s.trim()).filter(Boolean);
+    if (!signs.length) return { count: 0, label: "unresolved signs — open case for detail", signs: [] };
+    const label = `${signs.length} unresolved sign${signs.length === 1 ? "" : "s"}`;
+    return { count: signs.length, label, signs };
+  }
   function setProgress(pane, loading) {
     pane.classList.toggle("pane-loading", loading);
   }
@@ -165,7 +180,12 @@
   function renderFooter() {
     const health = state.health;
     if (!health) { els.footerText.textContent = "footer unavailable — /api/health failed"; return; }
-    const quiet = health.model_off || state.quietOn ? "Quiet Mode — templates" : "Quiet Mode OFF";
+    // R-02: keyed on `model_enabled` (the SAME predicate the server gates
+    // every model call on), not the raw `model_off` env flag — a blank
+    // GEMINI_API_KEY or a live quota exhaustion both mean "templates in
+    // use" even though MODEL_OFF itself is "0".
+    const templatesOnly = state.modelOff || state.quietOn;
+    const quiet = templatesOnly ? "Quiet Mode — templates" : "Quiet Mode OFF";
     els.footerText.textContent = `model ${health.model || "unset"} · store ${health.store} · rules ${health.rules_version} · sha ${health.git_sha} · ${quiet}`;
   }
   function renderQuietSwitch() {
@@ -173,7 +193,7 @@
     els.quietBtn.setAttribute("aria-checked", on ? "true" : "false");
     els.quietBtn.classList.toggle("on", on);
     els.quietBtn.disabled = state.modelOff;
-    els.quietBtn.title = state.modelOff ? "set by server env" : "";
+    els.quietBtn.title = state.modelOff ? "model unavailable (server: off, no key, or quota) — see the strip above" : "";
     els.quietBadge.hidden = !on;
   }
 
@@ -184,6 +204,10 @@
     }
     if (row.route === "HUMAN_REVIEW") {
       const reason = (row.flags || []).find((f) => f !== "asha_visit_task") || "no reader available — nurse reads it";
+      const unresolved = unresolvedSignsSummary(reason);
+      if (unresolved) {
+        return `<div class="row-rule-line">no rule fired · <details class="unresolved-signs"><summary>${escapeHtml(unresolved.label)}</summary>${escapeHtml(unresolved.signs.join(", ")) || "open case for detail"}</details></div>`;
+      }
       return `<div class="row-rule-line">no rule fired · ${escapeHtml(reason)}</div>`;
     }
     if (row.route === "SILENCE") {
@@ -452,9 +476,19 @@
     const res = await api("GET", ROUTES.health());
     state.health = res.ok ? res.data : null;
     if (res.ok) {
-      state.modelOff = !!res.data.model_off;
-      if (state.modelOff) showQuotaStrip("Model off (server) — templates in use; decisions unchanged.");
-      else hideQuotaStrip();
+      // R-02: `model_enabled` is the real predicate (MODEL_OFF env AND a
+      // configured key), so `state.modelOff` ("templates only, server
+      // side") now also catches a blank GEMINI_API_KEY — previously only
+      // the literal MODEL_OFF=1 case showed this strip, so "leave the key
+      // empty" (README) silently ran on templates with no on-screen signal.
+      state.modelOff = res.data.model_enabled === false;
+      if (res.data.quota_exhausted) {
+        showQuotaStrip(`Model off (server) — quota exhausted, retry in ~${Math.ceil(res.data.quota_retry_after_s || 0)}s; templates in use; decisions unchanged.`);
+      } else if (state.modelOff) {
+        showQuotaStrip("Model off (server) — templates in use; decisions unchanged.");
+      } else {
+        hideQuotaStrip();
+      }
     }
     renderFooter();
     renderQuietSwitch();

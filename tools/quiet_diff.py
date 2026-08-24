@@ -200,7 +200,18 @@ def _run_sweep(*, seed: int, to: str, n: int, model_on: bool, live: bool, max_li
                 # model_enabled() just needs a truthy key present; the real
                 # network is never reached because render() itself is
                 # replaced below — this placeholder is never sent anywhere.
-                os.environ.setdefault("GEMINI_API_KEY", "quiet-diff-mock-key-not-a-real-secret")
+                # R-01: `.setdefault` is a no-op when GEMINI_API_KEY is
+                # already SET to the empty string (README's own
+                # `cp .env.example .env.local` leaves it exactly that way,
+                # and `load_dotenv` puts "" into os.environ, not "unset") —
+                # `agent.gemini_client.model_enabled()` then sees a falsy
+                # key and orchestrator._render_message short-circuits to the
+                # Quiet template before ever calling this module's patched
+                # `agent_writer.render`, so "on" silently degrades to "off"
+                # and `make quiet-diff` prints "0 prose fields differ" on a
+                # fresh clone. Check truthiness, not presence.
+                if not os.environ.get("GEMINI_API_KEY"):
+                    os.environ["GEMINI_API_KEY"] = "quiet-diff-mock-key-not-a-real-secret"
                 agent_writer_module.render = _mocked_render(recorded_cache)
             undo_patches.append(lambda: setattr(agent_writer_module, "render", original_render))
 
