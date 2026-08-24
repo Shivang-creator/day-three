@@ -1,4 +1,4 @@
-.PHONY: dev test demo quiet-diff diagram deploy
+.PHONY: dev test demo quiet-diff diagram deploy deploy-dry
 
 dev:
 	@echo "Loading .env.local and starting uvicorn (reload) on :8080"
@@ -17,4 +17,7 @@ diagram:
 	@echo "TODO: tools/diagram.py (T-25)"
 
 deploy:
-	@echo "TODO: deploy.sh (T-05)"
+	@bash deploy.sh
+
+deploy-dry:
+	@bash deploy.sh --dry-run
