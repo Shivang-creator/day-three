@@ -79,6 +79,7 @@ class CaseState(ToJsonMixin):
     flags: tuple = ()
     last_reply: str | None = None
     route_history: tuple = ()
+    retry_count: int = 0  # consecutive RETRY_SCHEDULED events since the last reply/new contact (T-11 silence policy)
 
 
 @dataclasses.dataclass(frozen=True)

@@ -63,6 +63,7 @@ def reduce(events: list[Event]) -> CaseState:
     flags: list[str] = []
     last_reply: str | None = None
     route_history: list[str] = []
+    retry_count = 0
 
     for e in sorted(events, key=lambda ev: ev.seq):
         if e.type == "ENROLLED":
@@ -71,13 +72,17 @@ def reduce(events: list[Event]) -> CaseState:
         elif e.type == "CONTACT_DUE":
             rung = e.payload.get("rung", rung)
             next_due = e.payload.get("due", next_due)
+            retry_count = 0  # a fresh contact cycle starts with no retries yet
         elif e.type == "CONTACT_RESCHEDULED":
             rung = e.payload.get("rung", rung)
             next_due = e.payload.get("due", next_due)
+            retry_count = 0
         elif e.type == "RETRY_SCHEDULED":
             next_due = e.payload.get("due", next_due)
+            retry_count += 1
         elif e.type == "REPLY_RECEIVED":
             last_reply = e.payload.get("text") or e.payload.get("summary")
+            retry_count = 0  # a reply ends the silence streak
         elif e.type == "VERDICT":
             route = e.payload.get("route")
             if route:
@@ -102,4 +107,5 @@ def reduce(events: list[Event]) -> CaseState:
         flags=tuple(flags),
         last_reply=last_reply,
         route_history=tuple(route_history),
+        retry_count=retry_count,
     )
