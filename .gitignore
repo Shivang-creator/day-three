@@ -1,0 +1,9 @@
+.env.local
+.env
+.venv
+__pycache__
+.crew
+.data
+.pytest_cache
+*.pyc
+docs/tmp
