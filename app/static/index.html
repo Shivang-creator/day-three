@@ -73,12 +73,14 @@
 
       <section class="pane pane-outbox" aria-label="Outbox" id="pane-outbox">
         <header class="pane-header">
-          <h2>Outbox <span class="pill pill-simulated">Simulated</span></h2>
+          <h2>Outbox <span class="pill pill-simulated">Simulated</span> <span class="badge-quiet" id="quiet-badge" hidden>QUIET</span></h2>
+          <button type="button" id="quiet-toggle" class="quiet-switch" role="switch" aria-checked="false">
+            <span class="quiet-knob" aria-hidden="true"></span><span>Quiet Mode &mdash; model off</span>
+          </button>
         </header>
         <div class="pane-body" id="outbox-body">
           <div class="empty-state">
             <p>Nothing sent yet &mdash; nothing is ever delivered.</p>
-            <p class="empty-sub">Outbox, Quiet Mode, replay and the reply box arrive in the next update.</p>
           </div>
         </div>
       </section>
