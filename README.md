@@ -132,7 +132,6 @@ Every rule but one quotes one of these documents verbatim (`research/RULES-SOURC
 - **Self-harm with the model off** goes to `HUMAN_REVIEW`, not `HUMAN_REVIEW_NOW`. Stated in full above.
 - **Free-tier quota.** 20 `gemini-3.5-flash` requests per day; one day-3 sweep drafts up to 4 messages and the ADK `Runner` retries a 429 two or three times per call, so a demo can exhaust the day. When the key is missing or the quota is out, `/api/health` says `model_enabled: false` or `quota_exhausted: true`, the banner says so, and messages fall back to templates tagged Rule.
 - **Every seed shows the same 38 names** and the same 4 urgent / 4 silent / 30 routine split; what changes between seeds is which mothers escalate and on which ladder. The split is a quota in `core/cohort.py`, not a sample.
-- **On a 390 px phone the Advance button row clips** past D14 with no visible scroll cue. Desktop is unaffected.
 
 ## AI tools used, by name
 
