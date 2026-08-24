@@ -62,6 +62,7 @@
     caseBody: $("case-body"), caseTitle: $("case-title"), caseMeta: $("case-meta"),
     footerText: $("footer-text"), tabbar: $("tabbar"), panes: Array.from(document.querySelectorAll(".pane")),
     outboxBody: $("outbox-body"), quietBtn: $("quiet-toggle"), quietBadge: $("quiet-badge"),
+    topbarControls: $("topbar-controls"), scrollHint: $("topbar-scroll-hint"),
   };
 
   // ------------------------------------------------------------- helpers --
@@ -652,6 +653,21 @@
     }
   }
 
+  // -------------------------------------------------- topbar scroll hint --
+  // Phone breakpoint (<=699px) makes .topbar-controls a horizontally
+  // scrolling strip (DESIGN.md §3) so the five Advance buttons all fit.
+  // J-05: that scroll was real but had zero visual affordance, so a judge
+  // at 390px saw the row clipped mid-label and assumed it was broken. This
+  // toggles a small fading "more content" chevron whenever the strip is
+  // scrollable and not already scrolled to its end.
+  function updateScrollHint() {
+    const el = els.topbarControls;
+    const hint = els.scrollHint;
+    if (!el || !hint) return;
+    const hasMore = el.scrollWidth - el.clientWidth - el.scrollLeft > 4;
+    hint.classList.toggle("visible", hasMore);
+  }
+
   // ------------------------------------------------------------- tab bar --
   function switchToPane(paneId) {
     els.panes.forEach((p) => p.classList.toggle("active", p.id === paneId));
@@ -666,12 +682,17 @@
     Array.from(els.advanceGroup.querySelectorAll(".advance-btn")).forEach((btn) => btn.addEventListener("click", () => doAdvance(btn.getAttribute("data-to"))));
     Array.from(els.tabbar.querySelectorAll(".tab-btn")).forEach((btn) => btn.addEventListener("click", () => switchToPane(btn.getAttribute("data-pane"))));
     els.quietBtn.addEventListener("click", doQuietToggle);
+    if (els.topbarControls) {
+      els.topbarControls.addEventListener("scroll", updateScrollHint, { passive: true });
+      window.addEventListener("resize", updateScrollHint);
+    }
   }
   async function init() {
     readUrlParams();
     renderClock();
     wireEvents();
     switchToPane("pane-worklist");
+    updateScrollHint();
     await loadHealth();
     loadRules(); // not awaited — keypad renders once it lands, worklist/case unaffected
     await loadWorklist();
@@ -683,6 +704,7 @@
       state.clockIso = state.clockIso || DEFAULT_EPOCH;
       renderClock();
     }
+    updateScrollHint();
   }
   document.addEventListener("DOMContentLoaded", init);
 })();

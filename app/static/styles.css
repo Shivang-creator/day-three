@@ -38,11 +38,13 @@ a, button { outline-offset: 2px; }
 #app { display: flex; flex-direction: column; min-height: 100vh; }
 
 /* top bar */
-.topbar { min-height: 56px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--s3); padding: var(--s3) var(--s4); border-bottom: 1px solid var(--line); background: var(--bg); min-width: 0; max-width: 100%; }
+.topbar { position: relative; min-height: 56px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--s3); padding: var(--s3) var(--s4); border-bottom: 1px solid var(--line); background: var(--bg); min-width: 0; max-width: 100%; }
 .topbar-title { display: flex; flex-direction: column; gap: 2px; min-width: 0; max-width: 100%; flex: 1 1 auto; }
 .product { font-weight: 600; font-size: var(--t-l); }
 .question { display: block; font-size: var(--t-xl); font-weight: 600; white-space: normal; overflow-wrap: break-word; max-width: 100%; }
+.mechanism { margin: 2px 0 0; font-size: var(--t-s); font-weight: 400; color: var(--muted); max-width: 100%; }
 .topbar-controls { display: flex; align-items: center; gap: var(--s3); flex-wrap: wrap; min-width: 0; max-width: 100%; }
+.scroll-hint { display: none; }
 .seed-field { display: flex; align-items: center; gap: var(--s2); font-size: var(--t-s); color: var(--muted); }
 #seed-input { width: 4rem; padding: var(--s1) var(--s2); border: 1px solid var(--line-strong); border-radius: var(--radius); background: var(--bg); color: var(--ink); }
 .clock-display { display: inline-flex; align-items: center; gap: var(--s2); font-size: var(--t-s); }
@@ -157,8 +159,17 @@ th, td { border-bottom: 1px solid var(--line); padding: var(--s1) var(--s2); tex
 @media (max-width: 699px) {
   html { font-size: 15px; }
   .topbar { flex-direction: column; align-items: stretch; }
-  .topbar-controls { overflow-x: auto; flex-wrap: nowrap; padding-bottom: var(--s1); }
+  .topbar-controls { overflow-x: auto; flex-wrap: nowrap; padding-bottom: var(--s1); scrollbar-width: thin; }
   .seed-field, .clock-display, .advance-group, #reset-btn { flex: none; }
+  .scroll-hint {
+    display: flex; align-items: center; justify-content: center;
+    position: absolute; right: var(--s4); bottom: calc(var(--s3) + var(--s1));
+    width: 26px; height: 44px;
+    background: linear-gradient(to right, transparent, var(--bg) 55%);
+    color: var(--muted); font-size: 1.25rem; line-height: 1;
+    pointer-events: none; opacity: 0; transition: opacity 150ms;
+  }
+  .scroll-hint.visible { opacity: 1; }
   .btn, #seed-input { min-height: 44px; }
   .advance-btn, .keypad-item { min-height: 44px; }
   .advance-btn { min-width: 44px; }
