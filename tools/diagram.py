@@ -283,7 +283,7 @@ def render(out_path: Path | str = DEFAULT_OUT, *, env: dict | None = None,
     c.box(390, BY, 300, BH, "app/main.py · FastAPI", [
         "POST seed · advance",
         "POST reply · quiet",
-        "POST replay · reset",
+        "GET replay · POST reset",
         "GET worklist · case/{id}",
         "GET outbox · rules",
         "GET health · /",
@@ -430,7 +430,7 @@ def render(out_path: Path | str = DEFAULT_OUT, *, env: dict | None = None,
 
     c.box(750, LY, 300, LH, "Sources (verbatim)", [
         "WHO postnatal care 2022",
-        "IMNCI 2019 newborn signs",
+        "WHO IMCI / PSBI newborn signs",
         "HBNC home-visit ladder",
         "per rule: source_id,",
         "source_quote, source_url",
