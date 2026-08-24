@@ -2,20 +2,98 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Day Three</title>
   <link rel="stylesheet" href="/static/styles.css">
 </head>
 <body>
-  <header>
-    <h1>Day Three</h1>
-    <p>Which mother needs to be seen before tomorrow?</p>
-  </header>
-  <main>
-    <section id="worklist" aria-label="Worklist">
-      <h2>Worklist</h2>
-      <p class="placeholder">Seed a cohort to see the morning worklist.</p>
-    </section>
-  </main>
+  <div id="app">
+    <header class="topbar" id="topbar">
+      <div class="topbar-title">
+        <span class="product">Day Three</span>
+        <span class="question">Which mother needs to be seen before tomorrow?</span>
+      </div>
+      <div class="topbar-controls" id="topbar-controls">
+        <label class="seed-field">
+          seed
+          <input type="text" inputmode="numeric" id="seed-input" value="3" aria-label="Cohort seed">
+        </label>
+        <button type="button" id="seed-btn" class="btn btn-primary">Seed cohort</button>
+        <span class="clock-display" id="clock-display" aria-live="polite">
+          <span class="clock-value mono">&mdash;</span>
+        </span>
+        <div class="advance-group" role="group" aria-label="Advance the clock" id="advance-group">
+          <span class="advance-label">Advance &rarr;</span>
+          <button type="button" class="btn btn-ghost advance-btn" data-to="D1">D1</button>
+          <button type="button" class="btn btn-ghost advance-btn" data-to="D3">D3</button>
+          <button type="button" class="btn btn-ghost advance-btn" data-to="D7">D7</button>
+          <button type="button" class="btn btn-ghost advance-btn" data-to="D14">D14</button>
+          <button type="button" class="btn btn-ghost advance-btn" data-to="D42">D42</button>
+        </div>
+        <button type="button" id="reset-btn" class="btn btn-ghost">Reset</button>
+      </div>
+    </header>
+
+    <div class="inline-note" id="seed-note" hidden></div>
+    <div class="inline-note" id="clock-note" hidden></div>
+
+    <div class="banner" id="banner">
+      Independent prototype &middot; synthetic data &middot; not a government, NHM or WHO product
+    </div>
+
+    <div class="quota-strip" id="quota-strip" hidden>
+      Model unavailable (quota) &mdash; templates in use; decisions unchanged.
+    </div>
+
+    <div class="progress-bar" id="progress-bar" hidden aria-hidden="true"></div>
+
+    <main class="panes">
+      <section class="pane pane-worklist" aria-label="Morning worklist" id="pane-worklist">
+        <header class="pane-header">
+          <h2>Worklist</h2>
+          <span class="pane-meta" id="worklist-meta"></span>
+        </header>
+        <div class="pane-body" id="worklist-body">
+          <div class="empty-state">
+            <p>No cohort yet. Seed 3 enrols 38 synthetic mothers.</p>
+            <button type="button" class="btn btn-primary" id="empty-seed-btn">Seed cohort</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="pane pane-case" aria-label="Case timeline" id="pane-case">
+        <header class="pane-header">
+          <h2 id="case-title">Case</h2>
+          <span class="pane-meta" id="case-meta"></span>
+        </header>
+        <div class="pane-body" id="case-body">
+          <div class="empty-state"><p>Select a mother.</p></div>
+        </div>
+      </section>
+
+      <section class="pane pane-outbox" aria-label="Outbox" id="pane-outbox">
+        <header class="pane-header">
+          <h2>Outbox <span class="pill pill-simulated">Simulated</span></h2>
+        </header>
+        <div class="pane-body" id="outbox-body">
+          <div class="empty-state">
+            <p>Nothing sent yet &mdash; nothing is ever delivered.</p>
+            <p class="empty-sub">Outbox, Quiet Mode, replay and the reply box arrive in the next update.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <nav class="tabbar" id="tabbar" aria-label="Panes">
+      <button type="button" class="tab-btn" data-pane="pane-worklist" aria-current="true">Worklist</button>
+      <button type="button" class="tab-btn" data-pane="pane-case">Case</button>
+      <button type="button" class="tab-btn" data-pane="pane-outbox">Outbox</button>
+    </nav>
+
+    <footer class="footer" id="footer">
+      <span id="footer-text">loading&hellip;</span>
+    </footer>
+  </div>
   <script src="/static/app.js"></script>
 </body>
 </html>
