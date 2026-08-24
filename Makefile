@@ -12,7 +12,7 @@ demo:
 	python -m tools.demo
 
 quiet-diff:
-	@echo "TODO: tools/quiet_diff.py (T-19)"
+	python -m tools.quiet_diff
 
 diagram:
 	python tools/diagram.py

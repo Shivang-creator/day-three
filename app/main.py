@@ -17,6 +17,7 @@ from pydantic import BaseModel
 from app import orchestrator
 from core.rulepack import load as load_rulepack
 from store import make_store
+from tools import quiet_diff
 
 load_dotenv(".env.local")
 
@@ -121,6 +122,42 @@ def reply(body: ReplyBody, seed: int = Query(...), clock: Optional[str] = Query(
 def quiet(body: QuietBody):
     orchestrator.set_quiet(STORE, body.seed, body.on)
     return {"seed": body.seed, "on": body.on}
+
+
+@app.get("/api/replay")
+def replay(seed: int = Query(...), clock: Optional[str] = Query(None)):
+    """PLAN §10 / T-19: the UI's Replay panel. Runs the seeded cohort's day-3
+    sweep TWICE, from ENROLLED, in two throwaway scratch namespaces (model
+    on vs off — never touching `STORE`/the real namespace at all) and
+    returns the DECISION diff (must always be empty) plus the message-prose
+    diff. `tools/quiet_diff.py::run_diff` is the exact function backing
+    both this route and its own CLI (`python -m tools.quiet_diff`) — the
+    UI and the command-line beat can never disagree because there is only
+    one implementation.
+
+    Deliberately GET + query params (`?seed=&clock=`), not PLAN §4.10's
+    older `POST /api/replay {seed}` sketch: every other read-only route in
+    this file already takes `?seed=` (T-16's own convention, "every route
+    accepts ?seed=... and ?clock="), and this route never writes to the
+    real Store — it's a read, so it gets a read verb. `clock` here reuses
+    that same query-param name to mean the sweep's target rung/ISO ("to"
+    in `orchestrator.advance`'s terms, and `tools/quiet_diff.py`'s own
+    `--to`), defaulting to "D3" — the demo default — when omitted.
+
+    `live=False` is HARD-CODED here, never read from the `LIVE` env var:
+    an HTTP route a judge (or a UI click-happy tester) can hit repeatedly
+    must never spend a real model call on its own. Live recording is a
+    deliberate, budgeted, CLI-only act (`LIVE=1 python -m tools.quiet_diff`,
+    capped at 4 real calls) — see that module's own docstring."""
+    result = quiet_diff.run_diff(seed=seed, to=clock or quiet_diff.DEFAULT_TO, live=False)
+    return {
+        "seed": seed,
+        "to": clock or quiet_diff.DEFAULT_TO,
+        "decision_changes": len(result["decision_changes"]),
+        "message_changes": len(result["message_changes"]),
+        "diff": result["decision_changes"],
+        "summary_line": result["summary_line"],
+    }
 
 
 @app.get("/api/outbox")
