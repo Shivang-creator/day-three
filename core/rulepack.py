@@ -47,6 +47,7 @@ class LadderRung:
     source_id: str
     source_quote: str
     source_url: str
+    fact_id: str | None = None  # the granular research-fact id (e.g. "SCHED-PCPNC-C2"), if any
 
 
 @dataclasses.dataclass(frozen=True)
@@ -60,6 +61,7 @@ class Sign:
     source_id: str
     source_quote: str
     source_url: str
+    fact_id: str | None = None
 
 
 @dataclasses.dataclass(frozen=True)
@@ -71,6 +73,7 @@ class Rule:
     source_id: str
     source_quote: str
     source_url: str
+    fact_id: str | None = None
 
 
 @dataclasses.dataclass(frozen=True)
@@ -81,6 +84,10 @@ class SilencePolicy:
     source_id: str
     source_quote: str
     source_url: str
+    fact_id: str | None = None
+    silence_id: str | None = None
+    timing_sourced: bool | None = None
+    timing_note: str | None = None
 
 
 @dataclasses.dataclass(frozen=True)
@@ -103,6 +110,8 @@ class RulePack:
     rules: tuple  # tuple[Rule, ...]
     silence: SilencePolicy
     clinic: Clinic
+    not_modelled: tuple = ()  # raw dicts: {"id","subject","reason"} — topics explicitly excluded, cited nowhere else
+    disagreements: tuple = ()  # raw dicts: {"id","topic","reading_a","reading_b","applied","source_ids"}
 
 
 def load(path: str | Path) -> RulePack:
@@ -119,7 +128,7 @@ def load(path: str | Path) -> RulePack:
     silence = _build_silence(raw, source_ids)
     clinic = _build_clinic(raw)
 
-    _check_route_precedence_uniqueness(rules)
+    _check_unique_rule_ids(rules)
     _check_self_harm_shape(signs, rules)
 
     return RulePack(
@@ -132,6 +141,8 @@ def load(path: str | Path) -> RulePack:
         rules=tuple(rules),
         silence=silence,
         clinic=clinic,
+        not_modelled=tuple(raw.get("not_modelled", [])),
+        disagreements=tuple(raw.get("disagreements", [])),
     )
 
 
@@ -202,6 +213,7 @@ def _build_ladder(raw: dict, source_ids: set[str]) -> list[LadderRung]:
                 source_id=entry["source_id"],
                 source_quote=entry["source_quote"],
                 source_url=entry["source_url"],
+                fact_id=entry.get("fact_id"),
             )
         )
     if not out:
@@ -229,6 +241,7 @@ def _build_signs(raw: dict, source_ids: set[str]) -> list[Sign]:
                 source_id=entry["source_id"],
                 source_quote=entry["source_quote"],
                 source_url=entry["source_url"],
+                fact_id=entry.get("fact_id"),
             )
         )
     if not out:
@@ -248,7 +261,6 @@ def _referenced_sign_ids(when: dict) -> set[str]:
 
 def _build_rules(raw: dict, source_ids: set[str], sign_ids: set[str]) -> list[Rule]:
     out = []
-    seen_routes: dict[str, str] = {}
     for entry in raw.get("rules", []):
         rule_id = entry.get("rule_id", "<unknown>")
         ctx = f"rule '{rule_id}'"
@@ -278,6 +290,7 @@ def _build_rules(raw: dict, source_ids: set[str], sign_ids: set[str]) -> list[Ru
                 source_id=entry["source_id"],
                 source_quote=entry["source_quote"],
                 source_url=entry["source_url"],
+                fact_id=entry.get("fact_id"),
             )
         )
     if not out:
@@ -301,6 +314,10 @@ def _build_silence(raw: dict, source_ids: set[str]) -> SilencePolicy:
         source_id=entry["source_id"],
         source_quote=entry["source_quote"],
         source_url=entry["source_url"],
+        fact_id=entry.get("fact_id"),
+        silence_id=entry.get("silence_id"),
+        timing_sourced=entry.get("timing_sourced"),
+        timing_note=entry.get("timing_note"),
     )
 
 
@@ -318,17 +335,27 @@ def _build_clinic(raw: dict) -> Clinic:
     )
 
 
-def _check_route_precedence_uniqueness(rules: list[Rule]) -> None:
-    """No two rules may declare the same route: each precedence class is owned
-    by exactly one rule (which fires on an any_of/all_of set of signs)."""
-    seen: dict[str, str] = {}
-    for r in rules:
-        if r.route in seen:
+def _check_unique_rule_ids(rules: list[Rule]) -> None:
+    """rule_id is the pack's own primary key (it is what a fired Verdict cites
+    back to the nurse) — two rules sharing one would make citations ambiguous.
+
+    Earlier drafts of this loader instead required each *route* to be claimed
+    by exactly one rule. That was wrong: gate.py computes the route from sign
+    severity (PLAN §4.5), and `rules[]` exists to give every individual danger
+    sign its own citation — e.g. ten different newborn-red signs each need
+    their own rule_id and source_quote, all correctly routing
+    URGENT_FACILITY_NOW. A pack with real WHO/HBNC citations (T-07) could
+    never satisfy one-rule-per-route once it grew past five rules total.
+    See regression test test_multiple_rules_may_share_one_route.
+    """
+    seen: dict[str, int] = {}
+    for i, r in enumerate(rules):
+        if r.rule_id in seen:
             raise RulePackError(
-                f"rule '{r.rule_id}': route '{r.route}' already claimed by rule '{seen[r.route]}' "
-                "(exactly one rule per route precedence class)"
+                f"rule '{r.rule_id}': rule_id already used by rule at index {seen[r.rule_id]} "
+                "(rule_id must be unique — it is the citation key)"
             )
-        seen[r.route] = r.rule_id
+        seen[r.rule_id] = i
 
 
 def _check_self_harm_shape(signs: list[Sign], rules: list[Rule]) -> None:

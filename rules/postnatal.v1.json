@@ -1,18 +1,48 @@
 {
   "pack_id": "postnatal",
-  "version": "0.0.1-placeholder",
+  "version": "1.0.0",
   "reviewed_by": null,
   "sources": [
     {
-      "source_id": "TEST-SRC-1",
-      "title": "Test Source One",
-      "url": "https://example.org/src1",
+      "source_id": "S1",
+      "title": "WHO recommendations on maternal and newborn care for a positive postnatal experience",
+      "url": "https://www.who.int/publications/i/item/9789240045989",
       "accessed": "2026-08-25"
     },
     {
-      "source_id": "TEST-SRC-2",
-      "title": "Test Source Two",
-      "url": "https://example.org/src2",
+      "source_id": "S2",
+      "title": "Pregnancy, Childbirth, Postpartum and Newborn Care: A guide for essential practice (PCPNC), 3rd edition",
+      "url": "https://www.who.int/publications/i/item/9789241549356",
+      "accessed": "2026-08-25"
+    },
+    {
+      "source_id": "S3",
+      "title": "Integrated Management of Childhood Illness (IMCI), Distance Learning Course — Module 2: The Sick Young Infant",
+      "url": "https://iris.who.int/bitstreams/a246c69c-3bf4-4799-b425-065c5778213a/download",
+      "accessed": "2026-08-25"
+    },
+    {
+      "source_id": "S4",
+      "title": "Guideline: Managing possible serious bacterial infection in young infants when referral is not possible (PSBI)",
+      "url": "https://iris.who.int/bitstream/handle/10665/181426/9789241509268_eng.pdf?sequence=1",
+      "accessed": "2026-08-25"
+    },
+    {
+      "source_id": "S5",
+      "title": "Home Based Newborn Care (HBNC) Operational Guidelines",
+      "url": "https://nhm.gov.in/images/pdf/communitisation/asha/Orders-Guidelines/HBNC_Operational_Guidelines_English.pdf",
+      "accessed": "2026-08-25"
+    },
+    {
+      "source_id": "S6",
+      "title": "Postnatal Care for Mothers and Newborns: Highlights from the WHO 2013 Guidelines (corroborating brief)",
+      "url": "https://cdn.who.int/media/docs/default-source/mca-documents/nbh/brief-postnatal-care-for-mothers-and-newborns-highlights-from-the-who-2013-guidelines.pdf",
+      "accessed": "2026-08-25"
+    },
+    {
+      "source_id": "RESEARCH-NOTE",
+      "title": "research/RULES-SOURCE.md — 'What we do NOT model' finding: S1 was checked and contains no self-harm/PPD screening item; not a WHO rule, a builder non-finding note",
+      "url": "https://www.who.int/publications/i/item/9789240045989",
       "accessed": "2026-08-25"
     }
   ],
@@ -20,20 +50,102 @@
     {
       "rung": "D1",
       "due_hours_after_discharge": 24,
-      "window_hours": 12,
+      "window_hours": 24,
       "variant": "WHO",
-      "source_id": "TEST-SRC-1",
-      "source_quote": "Day one contact after discharge is recommended for every mother and newborn.",
-      "source_url": "https://example.org/src1"
+      "fact_id": "SCHED-PCPNC-C1",
+      "source_id": "S2",
+      "source_url": "https://www.who.int/publications/i/item/9789241549356",
+      "source_quote": "First contact: within 24 hours after childbirth."
     },
     {
       "rung": "D3",
       "due_hours_after_discharge": 48,
       "window_hours": 24,
       "variant": "WHO",
-      "source_id": "TEST-SRC-1",
-      "source_quote": "Day three contact after discharge is recommended for every mother and newborn.",
-      "source_url": "https://example.org/src1"
+      "fact_id": "SCHED-PCPNC-C2",
+      "source_id": "S2",
+      "source_url": "https://www.who.int/publications/i/item/9789241549356",
+      "source_quote": "Second contact: on day 3 (48-72 hours)."
+    },
+    {
+      "rung": "D7",
+      "due_hours_after_discharge": 168,
+      "window_hours": 168,
+      "variant": "WHO",
+      "fact_id": "SCHED-PCPNC-C3",
+      "source_id": "S2",
+      "source_url": "https://www.who.int/publications/i/item/9789241549356",
+      "source_quote": "Third contact: between day 7 and 14 after birth."
+    },
+    {
+      "rung": "D42",
+      "due_hours_after_discharge": 1008,
+      "window_hours": 24,
+      "variant": "WHO",
+      "fact_id": "SCHED-PCPNC-C4",
+      "source_id": "S2",
+      "source_url": "https://www.who.int/publications/i/item/9789241549356",
+      "source_quote": "Final postnatal contact (clinic visit): at 6 weeks after birth."
+    },
+    {
+      "rung": "D3",
+      "due_hours_after_discharge": 72,
+      "window_hours": 24,
+      "variant": "HBNC",
+      "fact_id": "SCHED-HBNC-INSTITUTIONAL",
+      "source_id": "S5",
+      "source_url": "https://nhm.gov.in/images/pdf/communitisation/asha/Orders-Guidelines/HBNC_Operational_Guidelines_English.pdf",
+      "source_quote": "Six visits in the case of institutional delivery (Days 3, 7, 14, 21, 28 and 42)"
+    },
+    {
+      "rung": "D7",
+      "due_hours_after_discharge": 168,
+      "window_hours": 24,
+      "variant": "HBNC",
+      "fact_id": "SCHED-HBNC-INSTITUTIONAL",
+      "source_id": "S5",
+      "source_url": "https://nhm.gov.in/images/pdf/communitisation/asha/Orders-Guidelines/HBNC_Operational_Guidelines_English.pdf",
+      "source_quote": "Six visits in the case of institutional delivery (Days 3, 7, 14, 21, 28 and 42)"
+    },
+    {
+      "rung": "D14",
+      "due_hours_after_discharge": 336,
+      "window_hours": 24,
+      "variant": "HBNC",
+      "fact_id": "SCHED-HBNC-INSTITUTIONAL",
+      "source_id": "S5",
+      "source_url": "https://nhm.gov.in/images/pdf/communitisation/asha/Orders-Guidelines/HBNC_Operational_Guidelines_English.pdf",
+      "source_quote": "Six visits in the case of institutional delivery (Days 3, 7, 14, 21, 28 and 42)"
+    },
+    {
+      "rung": "D21",
+      "due_hours_after_discharge": 504,
+      "window_hours": 24,
+      "variant": "HBNC",
+      "fact_id": "SCHED-HBNC-INSTITUTIONAL",
+      "source_id": "S5",
+      "source_url": "https://nhm.gov.in/images/pdf/communitisation/asha/Orders-Guidelines/HBNC_Operational_Guidelines_English.pdf",
+      "source_quote": "Six visits in the case of institutional delivery (Days 3, 7, 14, 21, 28 and 42)"
+    },
+    {
+      "rung": "D28",
+      "due_hours_after_discharge": 672,
+      "window_hours": 24,
+      "variant": "HBNC",
+      "fact_id": "SCHED-HBNC-INSTITUTIONAL",
+      "source_id": "S5",
+      "source_url": "https://nhm.gov.in/images/pdf/communitisation/asha/Orders-Guidelines/HBNC_Operational_Guidelines_English.pdf",
+      "source_quote": "Six visits in the case of institutional delivery (Days 3, 7, 14, 21, 28 and 42)"
+    },
+    {
+      "rung": "D42",
+      "due_hours_after_discharge": 1008,
+      "window_hours": 24,
+      "variant": "HBNC",
+      "fact_id": "SCHED-HBNC-INSTITUTIONAL",
+      "source_id": "S5",
+      "source_url": "https://nhm.gov.in/images/pdf/communitisation/asha/Orders-Guidelines/HBNC_Operational_Guidelines_English.pdf",
+      "source_quote": "Six visits in the case of institutional delivery (Days 3, 7, 14, 21, 28 and 42)"
     }
   ],
   "signs": [
@@ -44,31 +156,334 @@
       "label_en": "Not feeding well",
       "label_hi": "ठीक से दूध नहीं पी रही",
       "keypad": "1",
-      "source_id": "TEST-SRC-2",
-      "source_quote": "A newborn who is not feeding well needs urgent facility assessment.",
-      "source_url": "https://example.org/src2"
+      "fact_id": "NB-EMERG-WHOREC25",
+      "source_id": "S1",
+      "source_url": "https://www.who.int/publications/i/item/9789240045989",
+      "source_quote": "Not feeding well; history of convulsions; fast breathing (breathing rate >60 per minute); severe chest in-drawing; no spontaneous movement; fever (temperature >37.5℃); low body temperature (temperature<35.5℃); any jaundice in first 24 hours after birth, or yellow palms and soles at any age."
+    },
+    {
+      "sign_id": "NB_CONVULSIONS",
+      "subject": "newborn",
+      "severity": "red",
+      "label_en": "History of convulsions / fits",
+      "label_hi": "दॉरे पड़ने का इतिहास",
+      "keypad": "2",
+      "fact_id": "NB-EMERG-WHOREC25",
+      "source_id": "S1",
+      "source_url": "https://www.who.int/publications/i/item/9789240045989",
+      "source_quote": "Not feeding well; history of convulsions; fast breathing (breathing rate >60 per minute); severe chest in-drawing; no spontaneous movement; fever (temperature >37.5℃); low body temperature (temperature<35.5℃); any jaundice in first 24 hours after birth, or yellow palms and soles at any age."
+    },
+    {
+      "sign_id": "NB_FAST_BREATHING",
+      "subject": "newborn",
+      "severity": "red",
+      "label_en": "Fast breathing (>60/min)",
+      "label_hi": "तेज सांस लेना (>60/मिनट)",
+      "keypad": "3",
+      "fact_id": "NB-EMERG-WHOREC25",
+      "source_id": "S1",
+      "source_url": "https://www.who.int/publications/i/item/9789240045989",
+      "source_quote": "Not feeding well; history of convulsions; fast breathing (breathing rate >60 per minute); severe chest in-drawing; no spontaneous movement; fever (temperature >37.5℃); low body temperature (temperature<35.5℃); any jaundice in first 24 hours after birth, or yellow palms and soles at any age."
+    },
+    {
+      "sign_id": "NB_CHEST_INDRAWING",
+      "subject": "newborn",
+      "severity": "red",
+      "label_en": "Severe chest in-drawing",
+      "label_hi": "गंभीर छाती धंसना",
+      "keypad": "4",
+      "fact_id": "NB-EMERG-WHOREC25",
+      "source_id": "S1",
+      "source_url": "https://www.who.int/publications/i/item/9789240045989",
+      "source_quote": "Not feeding well; history of convulsions; fast breathing (breathing rate >60 per minute); severe chest in-drawing; no spontaneous movement; fever (temperature >37.5℃); low body temperature (temperature<35.5℃); any jaundice in first 24 hours after birth, or yellow palms and soles at any age."
+    },
+    {
+      "sign_id": "NB_MOVEMENT_ABNORMAL",
+      "subject": "newborn",
+      "severity": "red",
+      "label_en": "Moves only when touched, or not at all",
+      "label_hi": "केवल छूने पर ही हिलता है या बिलकुल नहीं हिलता",
+      "keypad": "5",
+      "fact_id": "NB-EMERG-IMCI-VERYSEVERE",
+      "source_id": "S3",
+      "source_url": "https://iris.who.int/bitstreams/a246c69c-3bf4-4799-b425-065c5778213a/download",
+      "source_quote": "Any one of the following signs Not feeding well or Convulsions or Fast breathing (60 breaths per minute or more) or Severe chest indrawing or Fever (37.5°C* or above) or Low body temperature (less than 35.5°C*) or Movement only when stimulated or no movement at all."
     },
     {
       "sign_id": "NB_FEVER",
       "subject": "newborn",
       "severity": "red",
-      "label_en": "Fever",
-      "label_hi": "बुखार",
+      "label_en": "Fever (temperature > 37.5°C)",
+      "label_hi": "बुखार (37.5°C से अधिक)",
+      "keypad": "6",
+      "fact_id": "NB-EMERG-WHOREC25",
+      "source_id": "S1",
+      "source_url": "https://www.who.int/publications/i/item/9789240045989",
+      "source_quote": "Not feeding well; history of convulsions; fast breathing (breathing rate >60 per minute); severe chest in-drawing; no spontaneous movement; fever (temperature >37.5℃); low body temperature (temperature<35.5℃); any jaundice in first 24 hours after birth, or yellow palms and soles at any age."
+    },
+    {
+      "sign_id": "NB_LOW_TEMP",
+      "subject": "newborn",
+      "severity": "red",
+      "label_en": "Low body temperature (< 35.5°C)",
+      "label_hi": "शरीर का तापमान कम (35.5°C से कम)",
+      "keypad": "7",
+      "fact_id": "NB-EMERG-WHOREC25",
+      "source_id": "S1",
+      "source_url": "https://www.who.int/publications/i/item/9789240045989",
+      "source_quote": "Not feeding well; history of convulsions; fast breathing (breathing rate >60 per minute); severe chest in-drawing; no spontaneous movement; fever (temperature >37.5℃); low body temperature (temperature<35.5℃); any jaundice in first 24 hours after birth, or yellow palms and soles at any age."
+    },
+    {
+      "sign_id": "NB_JAUNDICE",
+      "subject": "newborn",
+      "severity": "red",
+      "label_en": "Jaundice in first 24h, or yellow palms/soles at any age",
+      "label_hi": "पहले 24 घंटे में पीलिया, या कभी भी पीली हथेली/तलवे",
+      "keypad": "8",
+      "fact_id": "NB-EMERG-WHOREC25",
+      "source_id": "S1",
+      "source_url": "https://www.who.int/publications/i/item/9789240045989",
+      "source_quote": "Not feeding well; history of convulsions; fast breathing (breathing rate >60 per minute); severe chest in-drawing; no spontaneous movement; fever (temperature >37.5℃); low body temperature (temperature<35.5℃); any jaundice in first 24 hours after birth, or yellow palms and soles at any age."
+    },
+    {
+      "sign_id": "NB_BLEEDING",
+      "subject": "newborn",
+      "severity": "red",
+      "label_en": "Bleeding",
+      "label_hi": "खून बहना",
+      "keypad": "9",
+      "fact_id": "NB-EMERG-PCPNC-COUNSEL",
+      "source_id": "S2",
+      "source_url": "https://www.who.int/publications/i/item/9789241549356",
+      "source_quote": "Go to hospital or health centre immediately, day or night, DO NOT wait, if your baby has any of the following signs: Difficulty breathing. Fits. Fever (temperature>=37.5 degrees celsius). Hypothermia(<35.5 degrees celsius). Feels cold. Bleeding. Stops feeding. Diarrhoea."
+    },
+    {
+      "sign_id": "NB_DIARRHOEA",
+      "subject": "newborn",
+      "severity": "red",
+      "label_en": "Diarrhoea",
+      "label_hi": "दस्त",
+      "keypad": "0",
+      "fact_id": "NB-EMERG-PCPNC-COUNSEL",
+      "source_id": "S2",
+      "source_url": "https://www.who.int/publications/i/item/9789241549356",
+      "source_quote": "Go to hospital or health centre immediately, day or night, DO NOT wait, if your baby has any of the following signs: Difficulty breathing. Fits. Fever (temperature>=37.5 degrees celsius). Hypothermia(<35.5 degrees celsius). Feels cold. Bleeding. Stops feeding. Diarrhoea."
+    },
+    {
+      "sign_id": "NB_UMBILICUS_INFECTED",
+      "subject": "newborn",
+      "severity": "yellow",
+      "label_en": "Umbilicus red or draining pus",
+      "label_hi": "नाभि लाल या मवाद बहना",
+      "keypad": "1",
+      "fact_id": "NB-URGENT-IMCI-LOCALINFECTION",
+      "source_id": "S3",
+      "source_url": "https://iris.who.int/bitstreams/a246c69c-3bf4-4799-b425-065c5778213a/download",
+      "source_quote": "Umbilicus red or draining pus, Skin pustules"
+    },
+    {
+      "sign_id": "NB_SKIN_PUSTULES",
+      "subject": "newborn",
+      "severity": "yellow",
+      "label_en": "Skin pustules",
+      "label_hi": "त्वचा पर फुंसियां",
       "keypad": "2",
-      "source_id": "TEST-SRC-2",
-      "source_quote": "A newborn with fever needs urgent facility assessment right away.",
-      "source_url": "https://example.org/src2"
+      "fact_id": "NB-URGENT-IMCI-LOCALINFECTION",
+      "source_id": "S3",
+      "source_url": "https://iris.who.int/bitstreams/a246c69c-3bf4-4799-b425-065c5778213a/download",
+      "source_quote": "Umbilicus red or draining pus, Skin pustules"
+    },
+    {
+      "sign_id": "NB_DIFFICULTY_FEEDING",
+      "subject": "newborn",
+      "severity": "yellow",
+      "label_en": "Difficulty feeding / feeds less than every 5 hours",
+      "label_hi": "दूध पिलाने में कठिनाई",
+      "keypad": "3",
+      "fact_id": "NB-URGENT-PCPNC-COUNSEL",
+      "source_id": "S2",
+      "source_url": "https://www.who.int/publications/i/item/9789241549356",
+      "source_quote": "Go to the health centre as soon as possible if your baby has any of the following signs: Difficulty feeding. Feeds less than every 5 hours. Pus coming from the eyes. Irritated cord with pus or blood. Yellow eyes or skin. Ulcers or thrush (white patches) in the mouth."
+    },
+    {
+      "sign_id": "NB_EYE_PUS",
+      "subject": "newborn",
+      "severity": "yellow",
+      "label_en": "Pus coming from the eyes",
+      "label_hi": "आंखों से मवाद आना",
+      "keypad": "4",
+      "fact_id": "NB-URGENT-PCPNC-COUNSEL",
+      "source_id": "S2",
+      "source_url": "https://www.who.int/publications/i/item/9789241549356",
+      "source_quote": "Go to the health centre as soon as possible if your baby has any of the following signs: Difficulty feeding. Feeds less than every 5 hours. Pus coming from the eyes. Irritated cord with pus or blood. Yellow eyes or skin. Ulcers or thrush (white patches) in the mouth."
+    },
+    {
+      "sign_id": "NB_MOUTH_ULCERS",
+      "subject": "newborn",
+      "severity": "yellow",
+      "label_en": "Mouth ulcers or thrush (white patches)",
+      "label_hi": "मुंह में छाले या सफेद धब्बे",
+      "keypad": "5",
+      "fact_id": "NB-URGENT-PCPNC-COUNSEL",
+      "source_id": "S2",
+      "source_url": "https://www.who.int/publications/i/item/9789241549356",
+      "source_quote": "Go to the health centre as soon as possible if your baby has any of the following signs: Difficulty feeding. Feeds less than every 5 hours. Pus coming from the eyes. Irritated cord with pus or blood. Yellow eyes or skin. Ulcers or thrush (white patches) in the mouth."
+    },
+    {
+      "sign_id": "M_BLEEDING_INCREASED",
+      "subject": "mother",
+      "severity": "red",
+      "label_en": "Vaginal bleeding has increased",
+      "label_hi": "योनि से रक्तस्राव बढ़ गया है",
+      "keypad": "1",
+      "fact_id": "MAT-EMERG-PCPNC",
+      "source_id": "S2",
+      "source_url": "https://www.who.int/publications/i/item/9789241549356",
+      "source_quote": "Go to hospital or health centre immediately, day or night, DO NOT wait, if any of the following signs: Vaginal bleeding has increased. Fits. Fast or difficult breathing. Fever and too weak to get out of bed. Severe headaches with blurred vision. Calf pain, redness or swelling; shortness of breath or chest pain."
+    },
+    {
+      "sign_id": "M_FITS",
+      "subject": "mother",
+      "severity": "red",
+      "label_en": "Fits",
+      "label_hi": "दौरे पड़ना",
+      "keypad": "2",
+      "fact_id": "MAT-EMERG-PCPNC",
+      "source_id": "S2",
+      "source_url": "https://www.who.int/publications/i/item/9789241549356",
+      "source_quote": "Go to hospital or health centre immediately, day or night, DO NOT wait, if any of the following signs: Vaginal bleeding has increased. Fits. Fast or difficult breathing. Fever and too weak to get out of bed. Severe headaches with blurred vision. Calf pain, redness or swelling; shortness of breath or chest pain."
+    },
+    {
+      "sign_id": "M_BREATHING_DIFFICULT",
+      "subject": "mother",
+      "severity": "red",
+      "label_en": "Fast or difficult breathing",
+      "label_hi": "तेज या मुश्किल सांस लेना",
+      "keypad": "3",
+      "fact_id": "MAT-EMERG-PCPNC",
+      "source_id": "S2",
+      "source_url": "https://www.who.int/publications/i/item/9789241549356",
+      "source_quote": "Go to hospital or health centre immediately, day or night, DO NOT wait, if any of the following signs: Vaginal bleeding has increased. Fits. Fast or difficult breathing. Fever and too weak to get out of bed. Severe headaches with blurred vision. Calf pain, redness or swelling; shortness of breath or chest pain."
+    },
+    {
+      "sign_id": "M_FEVER_WEAK",
+      "subject": "mother",
+      "severity": "red",
+      "label_en": "Fever and too weak to get out of bed",
+      "label_hi": "बुखार और बिस्तर से उठने में असमर्थ",
+      "keypad": "4",
+      "fact_id": "MAT-EMERG-PCPNC",
+      "source_id": "S2",
+      "source_url": "https://www.who.int/publications/i/item/9789241549356",
+      "source_quote": "Go to hospital or health centre immediately, day or night, DO NOT wait, if any of the following signs: Vaginal bleeding has increased. Fits. Fast or difficult breathing. Fever and too weak to get out of bed. Severe headaches with blurred vision. Calf pain, redness or swelling; shortness of breath or chest pain."
+    },
+    {
+      "sign_id": "M_SEVERE_HEADACHE_BLURRED",
+      "subject": "mother",
+      "severity": "red",
+      "label_en": "Severe headache with blurred vision",
+      "label_hi": "गंभीर सिरदर्द और धुंधली दृष्टि",
+      "keypad": "5",
+      "fact_id": "MAT-EMERG-PCPNC",
+      "source_id": "S2",
+      "source_url": "https://www.who.int/publications/i/item/9789241549356",
+      "source_quote": "Go to hospital or health centre immediately, day or night, DO NOT wait, if any of the following signs: Vaginal bleeding has increased. Fits. Fast or difficult breathing. Fever and too weak to get out of bed. Severe headaches with blurred vision. Calf pain, redness or swelling; shortness of breath or chest pain."
+    },
+    {
+      "sign_id": "M_CALF_SWELLING",
+      "subject": "mother",
+      "severity": "red",
+      "label_en": "Calf pain, redness or swelling",
+      "label_hi": "पिंडली में दर्द, लाली या सूजन",
+      "keypad": "6",
+      "fact_id": "MAT-EMERG-PCPNC",
+      "source_id": "S2",
+      "source_url": "https://www.who.int/publications/i/item/9789241549356",
+      "source_quote": "Go to hospital or health centre immediately, day or night, DO NOT wait, if any of the following signs: Vaginal bleeding has increased. Fits. Fast or difficult breathing. Fever and too weak to get out of bed. Severe headaches with blurred vision. Calf pain, redness or swelling; shortness of breath or chest pain."
+    },
+    {
+      "sign_id": "M_CHEST_PAIN_BREATHLESS",
+      "subject": "mother",
+      "severity": "red",
+      "label_en": "Shortness of breath or chest pain",
+      "label_hi": "सांस फूलना या सीने में दर्द",
+      "keypad": "7",
+      "fact_id": "MAT-EMERG-PCPNC",
+      "source_id": "S2",
+      "source_url": "https://www.who.int/publications/i/item/9789241549356",
+      "source_quote": "Go to hospital or health centre immediately, day or night, DO NOT wait, if any of the following signs: Vaginal bleeding has increased. Fits. Fast or difficult breathing. Fever and too weak to get out of bed. Severe headaches with blurred vision. Calf pain, redness or swelling; shortness of breath or chest pain."
     },
     {
       "sign_id": "M_SELF_HARM",
       "subject": "mother",
       "severity": "red",
-      "label_en": "Thoughts of self-harm",
+      "label_en": "Mentions thoughts of self-harm (always escalated, never assessed)",
       "label_hi": "खुद को नुकसान पहुंचाने के विचार",
       "keypad": "9",
-      "source_id": "TEST-SRC-2",
-      "source_quote": "EPDS item 10 screens for thoughts of self-harm and always needs human review.",
-      "source_url": "https://example.org/src2"
+      "fact_id": null,
+      "source_id": "RESEARCH-NOTE",
+      "source_url": "https://www.who.int/publications/i/item/9789240045989",
+      "source_quote": "Do not invent a threshold or a route for this — until a specific published screening rule is sourced, the engine must not claim to detect it."
+    },
+    {
+      "sign_id": "M_BREAST_TENDER",
+      "subject": "mother",
+      "severity": "yellow",
+      "label_en": "Swollen, red or tender breasts or nipples",
+      "label_hi": "स्तन में सूजन या दर्द",
+      "keypad": "1",
+      "fact_id": "MAT-URGENT-PCPNC",
+      "source_id": "S2",
+      "source_url": "https://www.who.int/publications/i/item/9789241549356",
+      "source_quote": "Go to health centre as soon as possible if any of the following signs: Swollen, red or tender breasts or nipples. Problems urinating, or leaking. Increased pain or infection in the perineum. Infection in the area of the wound. Smelly vaginal discharge."
+    },
+    {
+      "sign_id": "M_URINARY_PROBLEM",
+      "subject": "mother",
+      "severity": "yellow",
+      "label_en": "Problems urinating, or leaking",
+      "label_hi": "पेशाब में समस्या",
+      "keypad": "2",
+      "fact_id": "MAT-URGENT-PCPNC",
+      "source_id": "S2",
+      "source_url": "https://www.who.int/publications/i/item/9789241549356",
+      "source_quote": "Go to health centre as soon as possible if any of the following signs: Swollen, red or tender breasts or nipples. Problems urinating, or leaking. Increased pain or infection in the perineum. Infection in the area of the wound. Smelly vaginal discharge."
+    },
+    {
+      "sign_id": "M_PERINEAL_PAIN_INFECTION",
+      "subject": "mother",
+      "severity": "yellow",
+      "label_en": "Increased pain or infection in the perineum",
+      "label_hi": "पेरिनियम में दर्द या संक्रमण",
+      "keypad": "3",
+      "fact_id": "MAT-URGENT-PCPNC",
+      "source_id": "S2",
+      "source_url": "https://www.who.int/publications/i/item/9789241549356",
+      "source_quote": "Go to health centre as soon as possible if any of the following signs: Swollen, red or tender breasts or nipples. Problems urinating, or leaking. Increased pain or infection in the perineum. Infection in the area of the wound. Smelly vaginal discharge."
+    },
+    {
+      "sign_id": "M_WOUND_INFECTION",
+      "subject": "mother",
+      "severity": "yellow",
+      "label_en": "Infection in the area of the wound",
+      "label_hi": "घाव के आसपास संक्रमण",
+      "keypad": "4",
+      "fact_id": "MAT-URGENT-PCPNC",
+      "source_id": "S2",
+      "source_url": "https://www.who.int/publications/i/item/9789241549356",
+      "source_quote": "Go to health centre as soon as possible if any of the following signs: Swollen, red or tender breasts or nipples. Problems urinating, or leaking. Increased pain or infection in the perineum. Infection in the area of the wound. Smelly vaginal discharge."
+    },
+    {
+      "sign_id": "M_SMELLY_DISCHARGE",
+      "subject": "mother",
+      "severity": "yellow",
+      "label_en": "Smelly vaginal discharge",
+      "label_hi": "योनि से बदबूदार स्राव",
+      "keypad": "5",
+      "fact_id": "MAT-URGENT-PCPNC",
+      "source_id": "S2",
+      "source_url": "https://www.who.int/publications/i/item/9789241549356",
+      "source_quote": "Go to health centre as soon as possible if any of the following signs: Swollen, red or tender breasts or nipples. Problems urinating, or leaking. Increased pain or infection in the perineum. Infection in the area of the wound. Smelly vaginal discharge."
     }
   ],
   "rules": [
@@ -76,7 +491,96 @@
       "rule_id": "NB-01",
       "when": {
         "any_of": [
-          "NB_NOT_FEEDING",
+          "NB_NOT_FEEDING"
+        ]
+      },
+      "route": "URGENT_FACILITY_NOW",
+      "actions": [
+        "BOOK_SLOT",
+        "PAGE_NURSE",
+        "MESSAGE_MOTHER:come_now"
+      ],
+      "fact_id": "NB-EMERG-WHOREC25",
+      "source_id": "S1",
+      "source_url": "https://www.who.int/publications/i/item/9789240045989",
+      "source_quote": "Not feeding well; history of convulsions; fast breathing (breathing rate >60 per minute); severe chest in-drawing; no spontaneous movement; fever (temperature >37.5℃); low body temperature (temperature<35.5℃); any jaundice in first 24 hours after birth, or yellow palms and soles at any age."
+    },
+    {
+      "rule_id": "NB-02",
+      "when": {
+        "any_of": [
+          "NB_CONVULSIONS"
+        ]
+      },
+      "route": "URGENT_FACILITY_NOW",
+      "actions": [
+        "BOOK_SLOT",
+        "PAGE_NURSE",
+        "MESSAGE_MOTHER:come_now"
+      ],
+      "fact_id": "NB-EMERG-WHOREC25",
+      "source_id": "S1",
+      "source_url": "https://www.who.int/publications/i/item/9789240045989",
+      "source_quote": "Not feeding well; history of convulsions; fast breathing (breathing rate >60 per minute); severe chest in-drawing; no spontaneous movement; fever (temperature >37.5℃); low body temperature (temperature<35.5℃); any jaundice in first 24 hours after birth, or yellow palms and soles at any age."
+    },
+    {
+      "rule_id": "NB-03",
+      "when": {
+        "any_of": [
+          "NB_FAST_BREATHING"
+        ]
+      },
+      "route": "URGENT_FACILITY_NOW",
+      "actions": [
+        "BOOK_SLOT",
+        "PAGE_NURSE",
+        "MESSAGE_MOTHER:come_now"
+      ],
+      "fact_id": "NB-EMERG-WHOREC25",
+      "source_id": "S1",
+      "source_url": "https://www.who.int/publications/i/item/9789240045989",
+      "source_quote": "Not feeding well; history of convulsions; fast breathing (breathing rate >60 per minute); severe chest in-drawing; no spontaneous movement; fever (temperature >37.5℃); low body temperature (temperature<35.5℃); any jaundice in first 24 hours after birth, or yellow palms and soles at any age."
+    },
+    {
+      "rule_id": "NB-04",
+      "when": {
+        "any_of": [
+          "NB_CHEST_INDRAWING"
+        ]
+      },
+      "route": "URGENT_FACILITY_NOW",
+      "actions": [
+        "BOOK_SLOT",
+        "PAGE_NURSE",
+        "MESSAGE_MOTHER:come_now"
+      ],
+      "fact_id": "NB-EMERG-WHOREC25",
+      "source_id": "S1",
+      "source_url": "https://www.who.int/publications/i/item/9789240045989",
+      "source_quote": "Not feeding well; history of convulsions; fast breathing (breathing rate >60 per minute); severe chest in-drawing; no spontaneous movement; fever (temperature >37.5℃); low body temperature (temperature<35.5℃); any jaundice in first 24 hours after birth, or yellow palms and soles at any age."
+    },
+    {
+      "rule_id": "NB-05",
+      "when": {
+        "any_of": [
+          "NB_MOVEMENT_ABNORMAL"
+        ]
+      },
+      "route": "URGENT_FACILITY_NOW",
+      "actions": [
+        "BOOK_SLOT",
+        "PAGE_NURSE",
+        "MESSAGE_MOTHER:come_now"
+      ],
+      "fact_id": "NB-EMERG-IMCI-VERYSEVERE",
+      "source_id": "S3",
+      "source_url": "https://iris.who.int/bitstreams/a246c69c-3bf4-4799-b425-065c5778213a/download",
+      "source_quote": "Any one of the following signs Not feeding well or Convulsions or Fast breathing (60 breaths per minute or more) or Severe chest indrawing or Fever (37.5°C* or above) or Low body temperature (less than 35.5°C*) or Movement only when stimulated or no movement at all."
+    },
+    {
+      "rule_id": "NB-06",
+      "when": {
+        "any_of": [
           "NB_FEVER"
         ]
       },
@@ -86,9 +590,293 @@
         "PAGE_NURSE",
         "MESSAGE_MOTHER:come_now"
       ],
-      "source_id": "TEST-SRC-2",
-      "source_quote": "Any red newborn danger sign requires same-day urgent facility care.",
-      "source_url": "https://example.org/src2"
+      "fact_id": "NB-EMERG-WHOREC25",
+      "source_id": "S1",
+      "source_url": "https://www.who.int/publications/i/item/9789240045989",
+      "source_quote": "Not feeding well; history of convulsions; fast breathing (breathing rate >60 per minute); severe chest in-drawing; no spontaneous movement; fever (temperature >37.5℃); low body temperature (temperature<35.5℃); any jaundice in first 24 hours after birth, or yellow palms and soles at any age."
+    },
+    {
+      "rule_id": "NB-07",
+      "when": {
+        "any_of": [
+          "NB_LOW_TEMP"
+        ]
+      },
+      "route": "URGENT_FACILITY_NOW",
+      "actions": [
+        "BOOK_SLOT",
+        "PAGE_NURSE",
+        "MESSAGE_MOTHER:come_now"
+      ],
+      "fact_id": "NB-EMERG-WHOREC25",
+      "source_id": "S1",
+      "source_url": "https://www.who.int/publications/i/item/9789240045989",
+      "source_quote": "Not feeding well; history of convulsions; fast breathing (breathing rate >60 per minute); severe chest in-drawing; no spontaneous movement; fever (temperature >37.5℃); low body temperature (temperature<35.5℃); any jaundice in first 24 hours after birth, or yellow palms and soles at any age."
+    },
+    {
+      "rule_id": "NB-08",
+      "when": {
+        "any_of": [
+          "NB_JAUNDICE"
+        ]
+      },
+      "route": "URGENT_FACILITY_NOW",
+      "actions": [
+        "BOOK_SLOT",
+        "PAGE_NURSE",
+        "MESSAGE_MOTHER:come_now"
+      ],
+      "fact_id": "NB-EMERG-WHOREC25",
+      "source_id": "S1",
+      "source_url": "https://www.who.int/publications/i/item/9789240045989",
+      "source_quote": "Not feeding well; history of convulsions; fast breathing (breathing rate >60 per minute); severe chest in-drawing; no spontaneous movement; fever (temperature >37.5℃); low body temperature (temperature<35.5℃); any jaundice in first 24 hours after birth, or yellow palms and soles at any age."
+    },
+    {
+      "rule_id": "NB-09",
+      "when": {
+        "any_of": [
+          "NB_BLEEDING"
+        ]
+      },
+      "route": "URGENT_FACILITY_NOW",
+      "actions": [
+        "BOOK_SLOT",
+        "PAGE_NURSE",
+        "MESSAGE_MOTHER:come_now"
+      ],
+      "fact_id": "NB-EMERG-PCPNC-COUNSEL",
+      "source_id": "S2",
+      "source_url": "https://www.who.int/publications/i/item/9789241549356",
+      "source_quote": "Go to hospital or health centre immediately, day or night, DO NOT wait, if your baby has any of the following signs: Difficulty breathing. Fits. Fever (temperature>=37.5 degrees celsius). Hypothermia(<35.5 degrees celsius). Feels cold. Bleeding. Stops feeding. Diarrhoea."
+    },
+    {
+      "rule_id": "NB-10",
+      "when": {
+        "any_of": [
+          "NB_DIARRHOEA"
+        ]
+      },
+      "route": "URGENT_FACILITY_NOW",
+      "actions": [
+        "BOOK_SLOT",
+        "PAGE_NURSE",
+        "MESSAGE_MOTHER:come_now"
+      ],
+      "fact_id": "NB-EMERG-PCPNC-COUNSEL",
+      "source_id": "S2",
+      "source_url": "https://www.who.int/publications/i/item/9789241549356",
+      "source_quote": "Go to hospital or health centre immediately, day or night, DO NOT wait, if your baby has any of the following signs: Difficulty breathing. Fits. Fever (temperature>=37.5 degrees celsius). Hypothermia(<35.5 degrees celsius). Feels cold. Bleeding. Stops feeding. Diarrhoea."
+    },
+    {
+      "rule_id": "NB-11",
+      "when": {
+        "any_of": [
+          "NB_UMBILICUS_INFECTED"
+        ]
+      },
+      "route": "SAME_DAY_VISIT",
+      "actions": [
+        "BOOK_SLOT",
+        "MESSAGE_MOTHER:same_day"
+      ],
+      "fact_id": "NB-URGENT-IMCI-LOCALINFECTION",
+      "source_id": "S3",
+      "source_url": "https://iris.who.int/bitstreams/a246c69c-3bf4-4799-b425-065c5778213a/download",
+      "source_quote": "Umbilicus red or draining pus, Skin pustules"
+    },
+    {
+      "rule_id": "NB-12",
+      "when": {
+        "any_of": [
+          "NB_SKIN_PUSTULES"
+        ]
+      },
+      "route": "SAME_DAY_VISIT",
+      "actions": [
+        "BOOK_SLOT",
+        "MESSAGE_MOTHER:same_day"
+      ],
+      "fact_id": "NB-URGENT-IMCI-LOCALINFECTION",
+      "source_id": "S3",
+      "source_url": "https://iris.who.int/bitstreams/a246c69c-3bf4-4799-b425-065c5778213a/download",
+      "source_quote": "Umbilicus red or draining pus, Skin pustules"
+    },
+    {
+      "rule_id": "NB-13",
+      "when": {
+        "any_of": [
+          "NB_DIFFICULTY_FEEDING"
+        ]
+      },
+      "route": "SAME_DAY_VISIT",
+      "actions": [
+        "BOOK_SLOT",
+        "MESSAGE_MOTHER:same_day"
+      ],
+      "fact_id": "NB-URGENT-PCPNC-COUNSEL",
+      "source_id": "S2",
+      "source_url": "https://www.who.int/publications/i/item/9789241549356",
+      "source_quote": "Go to the health centre as soon as possible if your baby has any of the following signs: Difficulty feeding. Feeds less than every 5 hours. Pus coming from the eyes. Irritated cord with pus or blood. Yellow eyes or skin. Ulcers or thrush (white patches) in the mouth."
+    },
+    {
+      "rule_id": "NB-14",
+      "when": {
+        "any_of": [
+          "NB_EYE_PUS"
+        ]
+      },
+      "route": "SAME_DAY_VISIT",
+      "actions": [
+        "BOOK_SLOT",
+        "MESSAGE_MOTHER:same_day"
+      ],
+      "fact_id": "NB-URGENT-PCPNC-COUNSEL",
+      "source_id": "S2",
+      "source_url": "https://www.who.int/publications/i/item/9789241549356",
+      "source_quote": "Go to the health centre as soon as possible if your baby has any of the following signs: Difficulty feeding. Feeds less than every 5 hours. Pus coming from the eyes. Irritated cord with pus or blood. Yellow eyes or skin. Ulcers or thrush (white patches) in the mouth."
+    },
+    {
+      "rule_id": "NB-15",
+      "when": {
+        "any_of": [
+          "NB_MOUTH_ULCERS"
+        ]
+      },
+      "route": "SAME_DAY_VISIT",
+      "actions": [
+        "BOOK_SLOT",
+        "MESSAGE_MOTHER:same_day"
+      ],
+      "fact_id": "NB-URGENT-PCPNC-COUNSEL",
+      "source_id": "S2",
+      "source_url": "https://www.who.int/publications/i/item/9789241549356",
+      "source_quote": "Go to the health centre as soon as possible if your baby has any of the following signs: Difficulty feeding. Feeds less than every 5 hours. Pus coming from the eyes. Irritated cord with pus or blood. Yellow eyes or skin. Ulcers or thrush (white patches) in the mouth."
+    },
+    {
+      "rule_id": "M-01",
+      "when": {
+        "any_of": [
+          "M_BLEEDING_INCREASED"
+        ]
+      },
+      "route": "URGENT_FACILITY_NOW",
+      "actions": [
+        "BOOK_SLOT",
+        "PAGE_NURSE",
+        "MESSAGE_MOTHER:come_now"
+      ],
+      "fact_id": "MAT-EMERG-PCPNC",
+      "source_id": "S2",
+      "source_url": "https://www.who.int/publications/i/item/9789241549356",
+      "source_quote": "Go to hospital or health centre immediately, day or night, DO NOT wait, if any of the following signs: Vaginal bleeding has increased. Fits. Fast or difficult breathing. Fever and too weak to get out of bed. Severe headaches with blurred vision. Calf pain, redness or swelling; shortness of breath or chest pain."
+    },
+    {
+      "rule_id": "M-02",
+      "when": {
+        "any_of": [
+          "M_FITS"
+        ]
+      },
+      "route": "URGENT_FACILITY_NOW",
+      "actions": [
+        "BOOK_SLOT",
+        "PAGE_NURSE",
+        "MESSAGE_MOTHER:come_now"
+      ],
+      "fact_id": "MAT-EMERG-PCPNC",
+      "source_id": "S2",
+      "source_url": "https://www.who.int/publications/i/item/9789241549356",
+      "source_quote": "Go to hospital or health centre immediately, day or night, DO NOT wait, if any of the following signs: Vaginal bleeding has increased. Fits. Fast or difficult breathing. Fever and too weak to get out of bed. Severe headaches with blurred vision. Calf pain, redness or swelling; shortness of breath or chest pain."
+    },
+    {
+      "rule_id": "M-03",
+      "when": {
+        "any_of": [
+          "M_BREATHING_DIFFICULT"
+        ]
+      },
+      "route": "URGENT_FACILITY_NOW",
+      "actions": [
+        "BOOK_SLOT",
+        "PAGE_NURSE",
+        "MESSAGE_MOTHER:come_now"
+      ],
+      "fact_id": "MAT-EMERG-PCPNC",
+      "source_id": "S2",
+      "source_url": "https://www.who.int/publications/i/item/9789241549356",
+      "source_quote": "Go to hospital or health centre immediately, day or night, DO NOT wait, if any of the following signs: Vaginal bleeding has increased. Fits. Fast or difficult breathing. Fever and too weak to get out of bed. Severe headaches with blurred vision. Calf pain, redness or swelling; shortness of breath or chest pain."
+    },
+    {
+      "rule_id": "M-04",
+      "when": {
+        "any_of": [
+          "M_FEVER_WEAK"
+        ]
+      },
+      "route": "URGENT_FACILITY_NOW",
+      "actions": [
+        "BOOK_SLOT",
+        "PAGE_NURSE",
+        "MESSAGE_MOTHER:come_now"
+      ],
+      "fact_id": "MAT-EMERG-PCPNC",
+      "source_id": "S2",
+      "source_url": "https://www.who.int/publications/i/item/9789241549356",
+      "source_quote": "Go to hospital or health centre immediately, day or night, DO NOT wait, if any of the following signs: Vaginal bleeding has increased. Fits. Fast or difficult breathing. Fever and too weak to get out of bed. Severe headaches with blurred vision. Calf pain, redness or swelling; shortness of breath or chest pain."
+    },
+    {
+      "rule_id": "M-05",
+      "when": {
+        "any_of": [
+          "M_SEVERE_HEADACHE_BLURRED"
+        ]
+      },
+      "route": "URGENT_FACILITY_NOW",
+      "actions": [
+        "BOOK_SLOT",
+        "PAGE_NURSE",
+        "MESSAGE_MOTHER:come_now"
+      ],
+      "fact_id": "MAT-EMERG-PCPNC",
+      "source_id": "S2",
+      "source_url": "https://www.who.int/publications/i/item/9789241549356",
+      "source_quote": "Go to hospital or health centre immediately, day or night, DO NOT wait, if any of the following signs: Vaginal bleeding has increased. Fits. Fast or difficult breathing. Fever and too weak to get out of bed. Severe headaches with blurred vision. Calf pain, redness or swelling; shortness of breath or chest pain."
+    },
+    {
+      "rule_id": "M-06",
+      "when": {
+        "any_of": [
+          "M_CALF_SWELLING"
+        ]
+      },
+      "route": "URGENT_FACILITY_NOW",
+      "actions": [
+        "BOOK_SLOT",
+        "PAGE_NURSE",
+        "MESSAGE_MOTHER:come_now"
+      ],
+      "fact_id": "MAT-EMERG-PCPNC",
+      "source_id": "S2",
+      "source_url": "https://www.who.int/publications/i/item/9789241549356",
+      "source_quote": "Go to hospital or health centre immediately, day or night, DO NOT wait, if any of the following signs: Vaginal bleeding has increased. Fits. Fast or difficult breathing. Fever and too weak to get out of bed. Severe headaches with blurred vision. Calf pain, redness or swelling; shortness of breath or chest pain."
+    },
+    {
+      "rule_id": "M-07",
+      "when": {
+        "any_of": [
+          "M_CHEST_PAIN_BREATHLESS"
+        ]
+      },
+      "route": "URGENT_FACILITY_NOW",
+      "actions": [
+        "BOOK_SLOT",
+        "PAGE_NURSE",
+        "MESSAGE_MOTHER:come_now"
+      ],
+      "fact_id": "MAT-EMERG-PCPNC",
+      "source_id": "S2",
+      "source_url": "https://www.who.int/publications/i/item/9789241549356",
+      "source_quote": "Go to hospital or health centre immediately, day or night, DO NOT wait, if any of the following signs: Vaginal bleeding has increased. Fits. Fast or difficult breathing. Fever and too weak to get out of bed. Severe headaches with blurred vision. Calf pain, redness or swelling; shortness of breath or chest pain."
     },
     {
       "rule_id": "M-SELF-HARM-01",
@@ -102,21 +890,111 @@
         "PAGE_NURSE",
         "HUMAN_REVIEW"
       ],
-      "source_id": "TEST-SRC-2",
-      "source_quote": "A positive self-harm screen must never be closed by automation and always reaches a human.",
-      "source_url": "https://example.org/src2"
+      "fact_id": null,
+      "source_id": "RESEARCH-NOTE",
+      "source_url": "https://www.who.int/publications/i/item/9789240045989",
+      "source_quote": "Do not invent a threshold or a route for this — until a specific published screening rule is sourced, the engine must not claim to detect it."
+    },
+    {
+      "rule_id": "M-09",
+      "when": {
+        "any_of": [
+          "M_BREAST_TENDER"
+        ]
+      },
+      "route": "SAME_DAY_VISIT",
+      "actions": [
+        "BOOK_SLOT",
+        "MESSAGE_MOTHER:same_day"
+      ],
+      "fact_id": "MAT-URGENT-PCPNC",
+      "source_id": "S2",
+      "source_url": "https://www.who.int/publications/i/item/9789241549356",
+      "source_quote": "Go to health centre as soon as possible if any of the following signs: Swollen, red or tender breasts or nipples. Problems urinating, or leaking. Increased pain or infection in the perineum. Infection in the area of the wound. Smelly vaginal discharge."
+    },
+    {
+      "rule_id": "M-10",
+      "when": {
+        "any_of": [
+          "M_URINARY_PROBLEM"
+        ]
+      },
+      "route": "SAME_DAY_VISIT",
+      "actions": [
+        "BOOK_SLOT",
+        "MESSAGE_MOTHER:same_day"
+      ],
+      "fact_id": "MAT-URGENT-PCPNC",
+      "source_id": "S2",
+      "source_url": "https://www.who.int/publications/i/item/9789241549356",
+      "source_quote": "Go to health centre as soon as possible if any of the following signs: Swollen, red or tender breasts or nipples. Problems urinating, or leaking. Increased pain or infection in the perineum. Infection in the area of the wound. Smelly vaginal discharge."
+    },
+    {
+      "rule_id": "M-11",
+      "when": {
+        "any_of": [
+          "M_PERINEAL_PAIN_INFECTION"
+        ]
+      },
+      "route": "SAME_DAY_VISIT",
+      "actions": [
+        "BOOK_SLOT",
+        "MESSAGE_MOTHER:same_day"
+      ],
+      "fact_id": "MAT-URGENT-PCPNC",
+      "source_id": "S2",
+      "source_url": "https://www.who.int/publications/i/item/9789241549356",
+      "source_quote": "Go to health centre as soon as possible if any of the following signs: Swollen, red or tender breasts or nipples. Problems urinating, or leaking. Increased pain or infection in the perineum. Infection in the area of the wound. Smelly vaginal discharge."
+    },
+    {
+      "rule_id": "M-12",
+      "when": {
+        "any_of": [
+          "M_WOUND_INFECTION"
+        ]
+      },
+      "route": "SAME_DAY_VISIT",
+      "actions": [
+        "BOOK_SLOT",
+        "MESSAGE_MOTHER:same_day"
+      ],
+      "fact_id": "MAT-URGENT-PCPNC",
+      "source_id": "S2",
+      "source_url": "https://www.who.int/publications/i/item/9789241549356",
+      "source_quote": "Go to health centre as soon as possible if any of the following signs: Swollen, red or tender breasts or nipples. Problems urinating, or leaking. Increased pain or infection in the perineum. Infection in the area of the wound. Smelly vaginal discharge."
+    },
+    {
+      "rule_id": "M-13",
+      "when": {
+        "any_of": [
+          "M_SMELLY_DISCHARGE"
+        ]
+      },
+      "route": "SAME_DAY_VISIT",
+      "actions": [
+        "BOOK_SLOT",
+        "MESSAGE_MOTHER:same_day"
+      ],
+      "fact_id": "MAT-URGENT-PCPNC",
+      "source_id": "S2",
+      "source_url": "https://www.who.int/publications/i/item/9789241549356",
+      "source_quote": "Go to health centre as soon as possible if any of the following signs: Swollen, red or tender breasts or nipples. Problems urinating, or leaking. Increased pain or infection in the perineum. Infection in the area of the wound. Smelly vaginal discharge."
     }
   ],
   "silence": {
+    "silence_id": "SIL-01",
     "retry_after_hours": 6,
     "max_retries": 1,
     "then": [
       "ASHA_VISIT_TASK",
       "FLAG_NURSE"
     ],
-    "source_id": "TEST-SRC-1",
-    "source_quote": "A mother who does not reply is retried once before an ASHA visit is scheduled.",
-    "source_url": "https://example.org/src1"
+    "fact_id": "HBNC-PIPELINE-ANM-BACKSTOP",
+    "source_id": "S5",
+    "source_url": "https://nhm.gov.in/images/pdf/communitisation/asha/Orders-Guidelines/HBNC_Operational_Guidelines_English.pdf",
+    "source_quote": "If the family is unable to go, the ASHA should ensure that the ANM visits the sick newborn on a priority basis.",
+    "timing_sourced": false,
+    "timing_note": "retry_after_hours (6) and max_retries (1) are a Day Three product decision (PLAN §4.6), not a WHO/HBNC citation — S5 sources only the escalation actor (ASHA/ANM home visit backstop), not the retry timing."
   },
   "clinic": {
     "open": "09:00",
@@ -124,5 +1002,70 @@
     "slot_minutes": 20,
     "urgent_reserve_per_day": 2,
     "tz": "Asia/Kolkata"
-  }
+  },
+  "not_modelled": [
+    {
+      "id": "NOT-01",
+      "subject": "Postpartum depression / thoughts of self-harm as a routable, clinically-assessed danger sign",
+      "reason": "None of S1, S2, S4, S5, or S6 that were actually read contain a quotable danger-sign line for this. No threshold or route was invented; M_SELF_HARM exists only as an always-escalate safety net (rule M-SELF-HARM-01, route HUMAN_REVIEW_NOW) — the engine never claims to assess it."
+    },
+    {
+      "id": "NOT-02",
+      "subject": "HBYC (Home Based Care for Young Child) day-count schedule",
+      "reason": "A PDF was located but never scraped or verified against an official nhm.gov.in-hosted copy; HBYC also covers ages beyond the newborn (0–42 day) period this pack models."
+    },
+    {
+      "id": "NOT-03",
+      "subject": "LaQshya discharge-readiness criteria",
+      "reason": "The official LaQshya page describes the initiative's objectives, not a quotable discharge-readiness checklist or danger-sign list — no rule was extracted from it."
+    },
+    {
+      "id": "NOT-04",
+      "subject": "The exact ASHA-facing danger-sign checklist form (S5 Annexure 1a/1b)",
+      "reason": "S5 references 'Checklist for first Visit to the Newborn (Annexure 1a)' and 'Home visit form (Annexure 1b)' but the scraped markdown did not carry the annexure tables. This pack's newborn/maternal signs use the WHO NB/MAT tables instead and do not assume they are identical to Annexure 1a/1b."
+    },
+    {
+      "id": "NOT-05",
+      "subject": "Mode-of-delivery-specific schedule adjustments (e.g. caesarean vs vaginal)",
+      "reason": "None of the six sources read specify a distinct contact schedule by delivery mode."
+    }
+  ],
+  "disagreements": [
+    {
+      "id": "DIS-01",
+      "topic": "Two different, non-identical follow-up schedules for two different actors",
+      "reading_a": "S1/S2 (WHO, clinic-facing): four contacts — within 24h, day 3 (48–72h), days 7–14, week 6.",
+      "reading_b": "S5 (India ASHA home-visit programme, institutional birth): six visits on fixed calendar days 3, 7, 14, 21, 28, 42.",
+      "applied": "Both, run in parallel and never merged — ladder entries carry variant \"WHO\" (default) or \"HBNC\" (selectable by setting); the engine does not silently collapse the two schedules.",
+      "source_ids": [
+        "S1",
+        "S2",
+        "S5"
+      ]
+    },
+    {
+      "id": "DIS-02",
+      "topic": "Newborn fever threshold: 37.5°C vs 38°C",
+      "reading_a": "S1 Rec. 25 and S3 (IMCI \"VERY SEVERE DISEASE\"): fever >37.5°C is the emergency sign.",
+      "reading_b": "S4 (PSBI \"clinical severe infection\" definition): temperature ≥ 38°C.",
+      "applied": "The lower, more cautious WHO PNC/IMCI threshold (>37.5°C) is the operative NB_FEVER cutoff, since S1 is the current (2022) primary guideline and S3 is WHO's own clinical-classification training material for the same age group. S4's 38°C threshold is noted here but not used.",
+      "source_ids": [
+        "S1",
+        "S3",
+        "S4"
+      ]
+    },
+    {
+      "id": "DIS-03",
+      "topic": "\"No spontaneous movement\" (S1) vs the two-part stimulated/no-movement check (S3/S4)",
+      "reading_a": "S1 Rec. 25 lists only \"no spontaneous movement\" as the danger sign.",
+      "reading_b": "S3/S4 add the intermediate state \"movement only when stimulated\" as also an emergency sign.",
+      "applied": "NB_MOVEMENT_ABNORMAL follows S3/S4's more sensitive wording (moves only when stimulated, or not at all), since S1's wording is a shorter summary of the same underlying WHO construct.",
+      "source_ids": [
+        "S1",
+        "S3",
+        "S4"
+      ]
+    }
+  ]
 }

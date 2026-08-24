@@ -1,4 +1,3 @@
-import copy
 import json
 from pathlib import Path
 
@@ -28,9 +27,61 @@ def test_pack_min_loads_successfully():
     assert len(pack.rules) == 2
 
 
-def test_real_pack_placeholder_loads_with_a_version():
-    pack = load(Path(__file__).parent.parent / "rules" / "postnatal.v1.json")
-    assert pack.version
+REAL_PACK = Path(__file__).parent.parent / "rules" / "postnatal.v1.json"
+
+
+def test_real_pack_loads_with_a_version():
+    pack = load(REAL_PACK)
+    assert pack.version == "1.0.0"
+
+
+def test_real_pack_meets_the_t07_minimum_counts():
+    pack = load(REAL_PACK)
+    assert len(pack.signs) >= 12
+    assert len(pack.rules) >= 8
+
+
+def test_real_pack_has_both_who_and_hbnc_ladder_variants():
+    pack = load(REAL_PACK)
+    variants = {r.variant for r in pack.ladder}
+    assert variants == {"WHO", "HBNC"}
+
+
+def test_real_pack_self_harm_is_not_falsely_attributed_to_a_clinical_source():
+    """The research file is explicit that no WHO/MoHFW document sources a
+    self-harm screening rule (research/RULES-SOURCE.md, "What we do NOT
+    model"). M_SELF_HARM must not carry a fact_id claiming otherwise — its
+    citation is the research file's own non-finding, not a fabricated
+    clinical threshold."""
+    pack = load(REAL_PACK)
+    self_harm = next(s for s in pack.signs if s.sign_id == "M_SELF_HARM")
+    assert self_harm.fact_id is None
+    assert self_harm.source_id == "RESEARCH-NOTE"
+
+
+def test_real_pack_not_modelled_covers_self_harm_and_names_a_reason():
+    pack = load(REAL_PACK)
+    ids = {n["id"]: n for n in pack.not_modelled}
+    assert "NOT-01" in ids
+    assert "self-harm" in ids["NOT-01"]["subject"].lower()
+    assert len(ids["NOT-01"]["reason"]) >= 20
+
+
+def test_real_pack_documents_all_three_source_disagreements():
+    pack = load(REAL_PACK)
+    assert len(pack.disagreements) == 3
+    for d in pack.disagreements:
+        assert d["applied"]
+        assert d["reading_a"] and d["reading_b"]
+
+
+def test_real_pack_silence_discloses_its_timing_is_unsourced():
+    """retry_after_hours/max_retries (PLAN §4.6) are a product decision, not
+    a WHO/HBNC citation — the pack must say so rather than dress a builder
+    choice up as sourced."""
+    pack = load(REAL_PACK)
+    assert pack.silence.timing_sourced is False
+    assert pack.silence.timing_note
 
 
 def test_error_names_the_offending_entry():
@@ -82,11 +133,26 @@ def test_rule_referencing_unknown_sign_raises():
         load(_write_tmp(data))
 
 
-def test_duplicate_route_across_rules_raises():
+def test_duplicate_rule_id_raises():
     data = _base()
-    data["rules"][1]["route"] = "URGENT_FACILITY_NOW"
-    with pytest.raises(RulePackError, match="already claimed"):
+    data["rules"][1]["rule_id"] = data["rules"][0]["rule_id"]
+    with pytest.raises(RulePackError, match="already used"):
         load(_write_tmp(data))
+
+
+def test_multiple_rules_may_share_one_route():
+    """Regression: an earlier loader required exactly one rule per route,
+    which real WHO/HBNC citation data (T-07, ten+ distinct red newborn signs
+    all routing URGENT_FACILITY_NOW) can never satisfy. Two rules with
+    different rule_ids and the same route must both load cleanly."""
+    data = _base()
+    extra = dict(data["rules"][0])
+    extra["rule_id"] = "NB-99"
+    extra["when"] = {"any_of": ["NB_FEVER"]}
+    data["rules"].append(extra)
+    pack = load(_write_tmp(data))
+    routes = [r.route for r in pack.rules]
+    assert routes.count("URGENT_FACILITY_NOW") == 2
 
 
 def test_missing_self_harm_sign_raises():
@@ -111,10 +177,6 @@ def test_self_harm_rule_must_route_human_review_now_raises():
     for r in data["rules"]:
         if r["rule_id"] == "M-SELF-HARM-01":
             r["route"] = "URGENT_FACILITY_NOW"
-    # give NB-01 a different route so the duplicate-route check doesn't fire first
-    for r in data["rules"]:
-        if r["rule_id"] == "NB-01":
-            r["route"] = "SAME_DAY_VISIT"
     with pytest.raises(RulePackError, match="HUMAN_REVIEW_NOW"):
         load(_write_tmp(data))
 
