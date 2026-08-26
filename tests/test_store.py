@@ -135,10 +135,29 @@ _FIRESTORE_MODULE_EXISTS = (Path(__file__).resolve().parent.parent / "store" / "
     not _FIRESTORE_MODULE_EXISTS or not _has_application_default_credentials(),
     reason="store/firestore.py lands in T-15, and/or no Application Default Credentials available",
 )
-def test_firestore_roundtrip():  # pragma: no cover - exercised once T-15 ships
+def test_firestore_roundtrip():  # pragma: no cover - needs ADC + GCP_PROJECT
+    """Runs against real Firestore. Uses a throwaway namespace and cleans up:
+    the original version wrote to namespace "3", which is the demo namespace a
+    live deploy actually serves, so it both polluted production data and failed
+    on a second run (append -> AlreadyExists -> False)."""
+    import uuid
+
     from store.firestore import FirestoreStore
 
     store = FirestoreStore(project=os.environ["GCP_PROJECT"])
-    ok = store.append("3:mother-01", _event(0), "k0")
-    assert ok is True
-    assert len(store.events("3:mother-01")) == 1
+    ns = f"test-{uuid.uuid4().hex[:12]}"
+    case = f"{ns}:mother-01"
+    try:
+        assert store.append(case, _event(0), "k0") is True
+        assert len(store.events(case)) == 1
+        # a retried append with the same idempotency key is a provable no-op
+        assert store.append(case, _event(0), "k0") is False
+        assert len(store.events(case)) == 1
+        # case_ids must find a case whose parent document was never written
+        # (the phantom-ancestor bug that made a live deploy show an empty
+        # worklist while every event sat in Firestore intact)
+        assert case in store.case_ids(ns)
+    finally:
+        store.reset(ns)
+    assert store.case_ids(ns) == []
+    assert store.events(case) == []

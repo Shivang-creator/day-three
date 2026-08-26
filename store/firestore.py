@@ -96,7 +96,14 @@ class FirestoreStore:
         return sorted(found, key=lambda e: e.seq)
 
     def case_ids(self, namespace: str) -> list[str]:
-        docs = self.client.collection("ns").document(namespace).collection("cases").stream()
+        # `stream()` yields only documents that were themselves written. We never
+        # write the `cases/{suffix}` document — `append()` writes into its
+        # `events` subcollection — so every parent here is a "phantom" ancestor
+        # and `stream()` returns nothing while the events sit there intact.
+        # `list_documents()` is the API that includes missing parents, which is
+        # exactly the set we want. MemoryStore keeps one flat dict and so never
+        # had this distinction; this is why it only ever broke on Firestore.
+        docs = self.client.collection("ns").document(namespace).collection("cases").list_documents()
         return sorted(f"{namespace}:{doc.id}" for doc in docs)
 
     # ------------------------------------------------------------ meta --
@@ -131,9 +138,11 @@ class FirestoreStore:
         (content-addressed, not namespace-addressed) and are deliberately
         left alone, mirroring MemoryStore.reset()'s own behaviour."""
         ns_ref = self.client.collection("ns").document(namespace)
-        for case_doc in ns_ref.collection("cases").stream():
-            for event_doc in case_doc.reference.collection("events").stream():
+        # list_documents(), not stream(): the case parents are phantom ancestors
+        # (see case_ids) so stream() would delete nothing at all.
+        for case_ref in ns_ref.collection("cases").list_documents():
+            for event_doc in case_ref.collection("events").stream():
                 event_doc.reference.delete()
-            case_doc.reference.delete()
+            case_ref.delete()
         for meta_doc in ns_ref.collection("meta").stream():
             meta_doc.reference.delete()
