@@ -1,5 +1,7 @@
 # Day Three
 
+**Live on Cloud Run: https://day-three-vypiu34uhq-el.a.run.app** (`asia-south1`, Firestore-backed, public).
+
 **Which mother needs to be seen before tomorrow?**
 
 Meena is the ANM at a primary health centre. Thirty-eight mothers went home with a newborn this month. Day three after birth is when a baby who has stopped feeding or is running a fever turns dangerous, and it is also the day nobody phones: the family is busy and so is the clinic. Meena finds out at the day-seven visit, or from the district hospital.
