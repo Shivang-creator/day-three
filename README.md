@@ -139,8 +139,9 @@ Every rule but one quotes one of these documents verbatim (`research/RULES-SOURC
 
 - **Claude Code (Anthropic)**, running as a crew of specialised agents, wrote the code, the tests, `deploy.sh`, `tools/diagram.py` and this README from Shivang Shirodkar's plan and decisions. He picked the problem, the domain, the two-layer design and every scope cut, reviews every commit, and owns the submission. The crew's working notes (`.crew/`) stay local; they hold his private planning.
 - **Firecrawl** was used by one of those agents to fetch the WHO and NHM documents above; quotes were copied verbatim, not summarised.
-- **Gemini 3.5 Flash** (`gemini-3.5-flash`, via `google-genai` and `google-adk`) runs at runtime only: it drafts escalation messages in Hindi and English and reads free-text replies into a symptom form. It makes no decisions.
-- **Gemma** and **Featherless** are not used.
+- **Gemini 3.5 Flash** (`gemini-3.5-flash`, via `google-genai` and `google-adk`) runs at runtime: it drafts escalation messages in Hindi and English and reads free-text replies into a symptom form. It makes no decisions.
+- **Gemma 2** (`gemma-2-2b-it`, via `google-genai`) runs as an intelligent fallback translation engine in `agent/tools.py::translate()` for freely composed messages when exact template pairs are not present.
+- **Featherless** is not used.
 
 Project started 24 Aug 2026 UTC (first commit 25 Aug 00:08 IST) for the All Things Agentic Hackathon.
 

@@ -76,21 +76,43 @@ def make_tools(store_view, pack):
                 return json.dumps(dataclasses.asdict(rule))
         return json.dumps({"error": f"no such rule_id: {rule_id}"})
 
+    def _translate_with_gemma(text: str, to: str) -> str | None:
+        """Fallback translation using Google Gemma (e.g. gemma-2-2b-it / gemma-2-9b-it)
+        via Google GenAI or local model when reviewed templates have no exact match."""
+        gemma_model = os.environ.get("GEMMA_MODEL", "gemma-2-2b-it")
+        api_key = os.environ.get("GEMINI_API_KEY") or os.environ.get("GEMMA_API_KEY")
+        if not api_key or os.environ.get("MODEL_OFF", "0") == "1":
+            return None
+        try:
+            from google import genai
+            from google.genai import types
+            client = genai.Client(api_key=api_key)
+            target_lang = "Hindi" if to == "hi" else "English"
+            prompt = f"Translate the following medical/postnatal message into {target_lang}. Return ONLY the direct translation:\n\n{text}"
+            config = types.GenerateContentConfig(
+                temperature=0.1,
+                http_options=types.HttpOptions(timeout=5000),
+            )
+            resp = client.models.generate_content(model=gemma_model, contents=prompt, config=config)
+            if resp and resp.text:
+                return resp.text.strip()
+        except Exception as exc:
+            logger.warning("Gemma translation fallback skipped: %s", exc)
+        return None
+
     def translate(text: str, to: str) -> str:
-        """Translate `text` to "hi" or "en" using only the parallel text
-        already reviewed in agent/templates.json (exact match). This is NOT
-        a general machine-translation tool: an unmatched string comes back
-        unchanged with a loud "[untranslated:<lang>]" marker rather than a
-        fabricated translation, because a silently wrong clinical
-        instruction in the wrong language is worse than an honest gap
-        (rule 8 — state the limit). Prefer draft_message for anything
-        template-shaped; this exists only for a freely composed line."""
+        """Translate `text` to "hi" or "en" using reviewed parallel templates
+        with Google Gemma (gemma-2-2b-it) as intelligent fallback for non-templated text.
+        If both are offline/unreachable, returns an honest '[untranslated:<lang>]' gap."""
         if to not in ("en", "hi"):
             return json.dumps({"error": f"unsupported target language: {to}"})
         pairs = _template_pairs()
         candidate = pairs.get(text)
         if candidate is not None and _is_hindi(candidate) == (to == "hi"):
             return candidate
+        gemma_trans = _translate_with_gemma(text, to)
+        if gemma_trans:
+            return gemma_trans
         logger.warning("agent.tools.translate: no known translation for text (len=%d) to %r", len(text), to)
         return f"[untranslated:{to}] {text}"
 
@@ -104,3 +126,4 @@ def make_tools(store_view, pack):
         return quiet.render(intent, lang, facts)["text"]
 
     return read_case, read_rule, translate, draft_message
+
