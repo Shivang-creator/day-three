@@ -12,7 +12,7 @@ from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
-from pydantic import BaseModel, StrictBool
+from pydantic import BaseModel, Field, StrictBool
 
 from agent.gemini_client import model_enabled, quota_exhausted, quota_retry_after_s
 from app import orchestrator
@@ -46,6 +46,9 @@ class AdvanceBody(BaseModel):
     to: str
 
 
+MAX_REPLY_TEXT_CHARS = 2000
+
+
 class ReplyBody(BaseModel):
     case_id: str
     # R-06 (RED-TEAM.md): a bare `Optional[dict]` accepted ANY JSON value
@@ -57,7 +60,11 @@ class ReplyBody(BaseModel):
     # JSON true/false with a 422 before it ever reaches core/ — unanswered
     # must never look like "no sign", it must fail loudly instead.
     keypad: Optional[dict[str, StrictBool]] = None
-    text: Optional[str] = None
+    # This service is public and unauthenticated, and `text` is pasted whole
+    # into a Gemini prompt (agent/reader.py) and then cached in the store. With
+    # no bound, one request could send megabytes to the paid model. A reply to
+    # an SMS check-in is a sentence or two; 2,000 characters is generous.
+    text: Optional[str] = Field(default=None, max_length=MAX_REPLY_TEXT_CHARS)
 
 
 class QuietBody(BaseModel):

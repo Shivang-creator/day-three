@@ -1,0 +1,13 @@
+# The Dockerfile does `COPY . .`. Without this file a local `docker build`
+# copies .env.local (the Gemini key) and the git history into the image.
+.env
+.env.*
+!.env.example
+.git
+.venv
+.crew
+.data
+.pytest_cache
+__pycache__
+*.pyc
+.DS_Store

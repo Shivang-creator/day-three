@@ -18,6 +18,7 @@ from __future__ import annotations
 import dataclasses
 import json
 import logging
+import os
 
 from agent import quiet
 from core.events import reduce
